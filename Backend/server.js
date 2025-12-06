@@ -1,31 +1,28 @@
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-const connectDB = require('./config/db');
-const userRoutes = require('./routes/userRoutes');
-const counsellorRoutes = require('./routes/counsellorRoutes');
+import express from "express";
+import mongoose from "mongoose";
+import dotenv from "dotenv";
+import cors from "cors";
+import chatRouter from "./Routes/chatRoutes.js";
 
-// Connect to Database
-connectDB();
-
+dotenv.config();
 const app = express();
 
-// Middleware
 app.use(express.json());
-app.use(cors());
 
-// Routes
-app.use('/api/users', userRoutes);
-app.use('/api/counsellors', counsellorRoutes);
+// Enable CORS for frontend dev and deployed apps.
+const corsOptions = {
+  origin: process.env.CORS_ORIGIN || 'http://localhost:4000',
+  optionsSuccessStatus: 200
+};
+app.use(cors(corsOptions));
 
-// Test Route
-app.get('/api/health', (req, res) => {
-    res.json({ message: 'API is running successfully' });
-});
+app.use("/api/chat", chatRouter);
 
-// Start Server
-const PORT = process.env.PORT || 5000;
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => console.log("MongoDB Connected"))
+  .catch((err) => console.log(err));
 
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+app.listen(process.env.PORT || 3000, () => {
+  console.log(`Server running on port ${process.env.PORT || 10000}`);
 });
