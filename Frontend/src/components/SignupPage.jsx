@@ -1,8 +1,8 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  Heart, Mail, Lock, User, Eye, EyeOff, 
+import {
+  Heart, Mail, Lock, User, Eye, EyeOff,
   CheckCircle, Shield, Loader2, UserCog
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -24,7 +24,7 @@ export default function UserSignup() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState(0);
-  
+
   const navigate = useNavigate();
   const { signup, signInWithGoogle } = useAuth();
 
@@ -40,11 +40,11 @@ export default function UserSignup() {
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
-    
+
     if (field === 'password') {
       setPasswordStrength(calculatePasswordStrength(value));
     }
-    
+
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: null }));
     }
@@ -52,37 +52,37 @@ export default function UserSignup() {
 
   const validate = () => {
     const newErrors = {};
-    
+
     if (!formData.fullName.trim()) {
       newErrors.fullName = 'Full name is required';
     } else if (formData.fullName.trim().length < 2) {
       newErrors.fullName = 'Name must be at least 2 characters';
     }
-    
+
     if (!formData.email.trim()) {
       newErrors.email = 'Email is required';
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       newErrors.email = 'Please enter a valid email address';
     }
-    
+
     if (!formData.password) {
       newErrors.password = 'Password is required';
     } else if (formData.password.length < 8) {
       newErrors.password = 'Password must be at least 8 characters';
     }
-    
+
     if (formData.password !== formData.confirmPassword) {
       newErrors.confirmPassword = 'Passwords do not match';
     }
-    
+
     if (!formData.ageConfirmation) {
       newErrors.ageConfirmation = 'You must confirm you are 18 or older';
     }
-    
+
     if (!formData.acceptTerms) {
       newErrors.acceptTerms = 'You must accept the terms and privacy policy';
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -90,15 +90,42 @@ export default function UserSignup() {
   const handleSubmit = async () => {
     if (validate()) {
       setIsSubmitting(true);
-      
+
       try {
-        await signup(formData.email, formData.password, formData.fullName, userType);
+        const userCredential = await signup(formData.email, formData.password, formData.fullName, userType);
+        const user = userCredential.user;
+
+        // Send user data to backend
+        try {
+          const backendResponse = await fetch('http://localhost:5000/api/users', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              firebaseUid: user.uid,
+              email: user.email,
+              fullName: formData.fullName,
+              role: userType
+            }),
+          });
+
+          if (backendResponse.ok) {
+            const data = await backendResponse.json();
+            // Store DB ID for onboarding if needed
+            localStorage.setItem('userId', data._id);
+          }
+        } catch (backendError) {
+          console.error('Backend registration error:', backendError);
+          // Optional: Handle backend error
+        }
+
         setIsSubmitted(true);
       } catch (error) {
         console.error('Signup error:', error);
-        
+
         let errorMessage = 'Failed to create account. Please try again.';
-        
+
         if (error.code === 'auth/email-already-in-use') {
           errorMessage = 'This email is already registered. Please sign in instead.';
           setErrors({ email: errorMessage });
@@ -122,21 +149,46 @@ export default function UserSignup() {
 
   const handleGoogleSignUp = async () => {
     setIsSubmitting(true);
-    
+
     try {
-      await signInWithGoogle(userType);
+      const userCredential = await signInWithGoogle(userType);
+      const user = userCredential.user;
+
+      // Send user data to backend
+      try {
+        const backendResponse = await fetch('http://localhost:5000/api/users', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            firebaseUid: user.uid,
+            email: user.email,
+            fullName: user.displayName,
+            role: userType
+          }),
+        });
+
+        if (backendResponse.ok) {
+          const data = await backendResponse.json();
+          localStorage.setItem('userId', data._id);
+        }
+      } catch (backendError) {
+        console.error('Backend registration error:', backendError);
+      }
+
       setIsSubmitted(true);
     } catch (error) {
       console.error('Google sign-up error:', error);
-      
+
       let errorMessage = 'Failed to sign up with Google. Please try again.';
-      
+
       if (error.code === 'auth/popup-closed-by-user') {
         errorMessage = 'Sign-up cancelled.';
       } else if (error.code === 'auth/popup-blocked') {
         errorMessage = 'Popup was blocked. Please allow popups for this site.';
       }
-      
+
       setErrors({ general: errorMessage });
     } finally {
       setIsSubmitting(false);
@@ -165,7 +217,7 @@ export default function UserSignup() {
   if (isSubmitted) {
     return (
       <div className="min-h-screen bg-[#eaf1f5] flex items-center justify-center p-4">
-        <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center animate-fade-in border" style={{borderColor:'#c8ced1'}}>
+        <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 text-center animate-fade-in border" style={{ borderColor: '#c8ced1' }}>
           <CheckCircle className="w-24 h-24 text-green-500 mx-auto mb-6" />
           <h2 className="text-3xl font-bold text-[#2e2f34] mb-4">Welcome to Sahay!</h2>
           <p className="text-[#767272] mb-6">
@@ -174,8 +226,14 @@ export default function UserSignup() {
           <p className="text-sm text-[#8d949d] mb-8">
             You can now start your mental wellness journey.
           </p>
-          <button 
-            onClick={() => navigate('/mainpage')}
+          <button
+            onClick={() => {
+              if (userType === 'counsellor') {
+                navigate('/counsellor-onboarding', { state: { userId: localStorage.getItem('userId') } });
+              } else {
+                navigate('/mainpage');
+              }
+            }}
             className="bg-[#2dc8ca] text-white px-8 py-3 rounded-lg font-semibold hover:opacity-90 transition-all duration-300 w-full"
           >
             Go to Dashboard
@@ -191,9 +249,8 @@ export default function UserSignup() {
         type="button"
         onClick={() => setUserType('user')}
         disabled={isSubmitting}
-        className={`w-1/2 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 flex items-center justify-center space-x-2 ${
-          userType === 'user' ? 'bg-white text-[#2e2f34] shadow-md' : 'text-[#767272]'
-        } ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+        className={`w-1/2 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 flex items-center justify-center space-x-2 ${userType === 'user' ? 'bg-white text-[#2e2f34] shadow-md' : 'text-[#767272]'
+          } ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
       >
         <User className="w-4 h-4" />
         <span>User</span>
@@ -202,9 +259,8 @@ export default function UserSignup() {
         type="button"
         onClick={() => setUserType('counsellor')}
         disabled={isSubmitting}
-        className={`w-1/2 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 flex items-center justify-center space-x-2 ${
-          userType === 'counsellor' ? 'bg-white text-[#2e2f34] shadow-md' : 'text-[#767272]'
-        } ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+        className={`w-1/2 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 flex items-center justify-center space-x-2 ${userType === 'counsellor' ? 'bg-white text-[#2e2f34] shadow-md' : 'text-[#767272]'
+          } ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
       >
         <UserCog className="w-4 h-4" />
         <span>Counsellor</span>
@@ -219,10 +275,10 @@ export default function UserSignup() {
           <h1 className="text-3xl font-bold text-[#2e2f34]">Create Account</h1>
           <p className="text-[#767272]">Join Sahay for mental wellness support.</p>
         </div>
-        
-        <div className="bg-white rounded-2xl shadow-xl p-6 sm:p-10 border" style={{borderColor:'#c8ced1'}}>
+
+        <div className="bg-white rounded-2xl shadow-xl p-6 sm:p-10 border" style={{ borderColor: '#c8ced1' }}>
           <UserTypeToggle />
-          
+
           <div className="space-y-6">
             {/* Full Name */}
             <div>
@@ -234,7 +290,7 @@ export default function UserSignup() {
                 onKeyPress={handleKeyPress}
                 disabled={isSubmitting}
                 className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#2dc8ca] focus:border-transparent ${errors.fullName ? 'border-red-500' : ''}`}
-                style={{borderColor: errors.fullName ? '#ef4444' : '#c8ced1'}}
+                style={{ borderColor: errors.fullName ? '#ef4444' : '#c8ced1' }}
                 placeholder="Enter your full name"
               />
               {errors.fullName && <p className="text-red-500 text-sm mt-1">{errors.fullName}</p>}
@@ -250,7 +306,7 @@ export default function UserSignup() {
                 onKeyPress={handleKeyPress}
                 disabled={isSubmitting}
                 className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#2dc8ca] focus:border-transparent ${errors.email ? 'border-red-500' : ''}`}
-                style={{borderColor: errors.email ? '#ef4444' : '#c8ced1'}}
+                style={{ borderColor: errors.email ? '#ef4444' : '#c8ced1' }}
                 placeholder="your.email@example.com"
               />
               {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
@@ -267,7 +323,7 @@ export default function UserSignup() {
                   onKeyPress={handleKeyPress}
                   disabled={isSubmitting}
                   className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#2dc8ca] focus:border-transparent ${errors.password ? 'border-red-500' : ''}`}
-                  style={{borderColor: errors.password ? '#ef4444' : '#c8ced1'}}
+                  style={{ borderColor: errors.password ? '#ef4444' : '#c8ced1' }}
                   placeholder="Minimum 8 characters"
                 />
                 <button
@@ -312,7 +368,7 @@ export default function UserSignup() {
                   onKeyPress={handleKeyPress}
                   disabled={isSubmitting}
                   className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#2dc8ca] focus:border-transparent ${errors.confirmPassword ? 'border-red-500' : ''}`}
-                  style={{borderColor: errors.confirmPassword ? '#ef4444' : '#c8ced1'}}
+                  style={{ borderColor: errors.confirmPassword ? '#ef4444' : '#c8ced1' }}
                   placeholder="Re-enter your password"
                 />
                 <button
@@ -336,7 +392,7 @@ export default function UserSignup() {
                   onChange={(e) => handleInputChange('ageConfirmation', e.target.checked)}
                   disabled={isSubmitting}
                   className="h-4 w-4 mt-1 text-[#2dc8ca] focus:ring-[#3d9098] rounded"
-                  style={{borderColor:'#c8ced1'}}
+                  style={{ borderColor: '#c8ced1' }}
                 />
                 <span className="ml-2 text-sm text-[#2e2f34]">
                   I confirm that I am 18 years of age or older *
@@ -354,7 +410,7 @@ export default function UserSignup() {
                   onChange={(e) => handleInputChange('acceptTerms', e.target.checked)}
                   disabled={isSubmitting}
                   className="h-4 w-4 mt-1 text-[#2dc8ca] focus:ring-[#3d9098] rounded"
-                  style={{borderColor:'#c8ced1'}}
+                  style={{ borderColor: '#c8ced1' }}
                 />
                 <span className="ml-2 text-sm text-[#2e2f34]">
                   I agree to the <a href="/terms" target="_blank" className="font-medium text-[#2dc8ca] hover:underline">Terms of Service</a> and <a href="/privacy" target="_blank" className="font-medium text-[#2dc8ca] hover:underline">Privacy Policy</a>. *
@@ -382,7 +438,7 @@ export default function UserSignup() {
             )}
 
             {/* Submit Buttons */}
-            <div className="pt-6 border-t space-y-3" style={{borderColor:'#c8ced1'}}>
+            <div className="pt-6 border-t space-y-3" style={{ borderColor: '#c8ced1' }}>
               <button
                 onClick={handleSubmit}
                 disabled={isSubmitting}
@@ -403,7 +459,7 @@ export default function UserSignup() {
 
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t" style={{borderColor:'#c8ced1'}}></div>
+                  <div className="w-full border-t" style={{ borderColor: '#c8ced1' }}></div>
                 </div>
                 <div className="relative flex justify-center text-sm">
                   <span className="px-2 bg-white text-[#767272]">Or continue with</span>
@@ -414,13 +470,13 @@ export default function UserSignup() {
                 onClick={handleGoogleSignUp}
                 disabled={isSubmitting}
                 className="w-full bg-white border py-3 px-4 rounded-lg font-semibold hover:bg-gray-50 transition-all duration-300 flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                style={{borderColor:'#c8ced1'}}
+                style={{ borderColor: '#c8ced1' }}
               >
                 <svg className="w-5 h-5" viewBox="0 0 24 24">
-                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                  <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                  <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
                 </svg>
                 <span>Sign up with Google</span>
               </button>

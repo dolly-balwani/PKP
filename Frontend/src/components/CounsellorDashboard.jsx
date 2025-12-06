@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Calendar, 
-  Clock, 
-  User, 
-  Star, 
-  CheckCircle, 
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import {
+  Calendar,
+  Clock,
+  User,
+  Star,
+  CheckCircle,
   Edit,
   Save,
   X,
@@ -19,7 +21,8 @@ import {
   Search,
   Plus,
   Trash2,
-  MessageSquare
+  MessageSquare,
+  LogOut
 } from 'lucide-react';
 
 const CounselorDashboard = () => {
@@ -29,6 +32,17 @@ const CounselorDashboard = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const [selectedDate, setSelectedDate] = useState('all');
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/');
+    } catch (error) {
+      console.error('Failed to log out', error);
+    }
+  };
 
   // Counselor profile state
   const [counselorProfile, setCounselorProfile] = useState({
@@ -131,7 +145,7 @@ const CounselorDashboard = () => {
   ];
 
   const languages = [
-    'English', 'Hindi', 'Tamil', 'Telugu', 'Marathi', 
+    'English', 'Hindi', 'Tamil', 'Telugu', 'Marathi',
     'Gujarati', 'Bengali', 'Punjabi', 'Kannada', 'Malayalam'
   ];
 
@@ -140,15 +154,15 @@ const CounselorDashboard = () => {
   // Filter appointments based on search and filters
   const filteredAppointments = appointments.filter(appointment => {
     const matchesSearch = appointment.studentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          appointment.reason.toLowerCase().includes(searchTerm.toLowerCase());
+      appointment.reason.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesFilter = filterStatus === 'all' || appointment.status === filterStatus;
     const matchesDate = selectedDate === 'all' || appointment.date === selectedDate;
     return matchesSearch && matchesFilter && matchesDate;
   });
 
   const handleAppointmentAction = (appointmentId, action, notes = '') => {
-    setAppointments(prev => prev.map(apt => 
-      apt.id === appointmentId 
+    setAppointments(prev => prev.map(apt =>
+      apt.id === appointmentId
         ? { ...apt, status: action, notes: notes || apt.notes }
         : apt
     ));
@@ -162,10 +176,10 @@ const CounselorDashboard = () => {
 
   const toggleDayAvailability = (day) => {
     setCounselorProfile(prev => {
-        const newAvailableDays = prev.availableDays.includes(day)
-            ? prev.availableDays.filter(d => d !== day)
-            : [...prev.availableDays, day];
-        return { ...prev, availableDays: newAvailableDays };
+      const newAvailableDays = prev.availableDays.includes(day)
+        ? prev.availableDays.filter(d => d !== day)
+        : [...prev.availableDays, day];
+      return { ...prev, availableDays: newAvailableDays };
     });
   };
 
@@ -204,13 +218,13 @@ const CounselorDashboard = () => {
   };
 
   const getSpecializationIcon = (specialization) => {
-    if (specialization.includes('Anxiety') || specialization.includes('Depression')) 
+    if (specialization.includes('Anxiety') || specialization.includes('Depression'))
       return <Brain className="w-4 h-4" />;
-    if (specialization.includes('Academic') || specialization.includes('Career')) 
+    if (specialization.includes('Academic') || specialization.includes('Career'))
       return <BookOpen className="w-4 h-4" />;
-    if (specialization.includes('Relationship') || specialization.includes('Social')) 
+    if (specialization.includes('Relationship') || specialization.includes('Social'))
       return <Users className="w-4 h-4" />;
-    if (specialization.includes('Crisis') || specialization.includes('Trauma')) 
+    if (specialization.includes('Crisis') || specialization.includes('Trauma'))
       return <Heart className="w-4 h-4" />;
     return <User className="w-4 h-4" />;
   };
@@ -220,7 +234,7 @@ const CounselorDashboard = () => {
   return (
     <div className="min-h-screen bg-[#eaf1f5]">
       {/* Header */}
-      <header className="bg-white border-b sticky top-0 z-30" style={{borderColor:'#c8ced1'}}>
+      <header className="bg-white border-b sticky top-0 z-30" style={{ borderColor: '#c8ced1' }}>
         <div className="px-6 py-5 flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <div className="w-12 h-12 bg-[#3d9098] rounded-lg flex items-center justify-center">
@@ -232,7 +246,7 @@ const CounselorDashboard = () => {
             </div>
           </div>
           <div className="flex items-center space-x-3">
-            <button 
+            <button
               onClick={() => setShowNotifications(!showNotifications)}
               className="relative p-2.5 rounded-lg bg-[#f38788] hover:opacity-90 transition-colors"
             >
@@ -248,6 +262,13 @@ const CounselorDashboard = () => {
               alt={counselorProfile.name}
               className="w-10 h-10 rounded-lg object-cover cursor-pointer"
             />
+            <button
+              onClick={handleLogout}
+              className="p-2.5 rounded-lg bg-white border border-[#c8ced1] text-[#767272] hover:bg-[#f2f7eb] hover:text-[#f38788] transition-colors"
+              title="Logout"
+            >
+              <LogOut className="w-5 h-5" />
+            </button>
           </div>
         </div>
       </header>
@@ -257,7 +278,7 @@ const CounselorDashboard = () => {
         <div className="max-w-7xl mx-auto">
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <div className="bg-white rounded-xl p-6 shadow-sm border" style={{borderColor:'#c8ced1'}}>
+            <div className="bg-white rounded-xl p-6 shadow-sm border" style={{ borderColor: '#c8ced1' }}>
               <div className="flex items-center space-x-3">
                 <div className="w-12 h-12 bg-[#f99c5b] rounded-lg flex items-center justify-center">
                   <Clock className="w-6 h-6 text-white" />
@@ -268,8 +289,8 @@ const CounselorDashboard = () => {
                 </div>
               </div>
             </div>
-            
-            <div className="bg-white rounded-xl p-6 shadow-sm border" style={{borderColor:'#c8ced1'}}>
+
+            <div className="bg-white rounded-xl p-6 shadow-sm border" style={{ borderColor: '#c8ced1' }}>
               <div className="flex items-center space-x-3">
                 <div className="w-12 h-12 bg-[#3d9098] rounded-lg flex items-center justify-center">
                   <Calendar className="w-6 h-6 text-white" />
@@ -280,8 +301,8 @@ const CounselorDashboard = () => {
                 </div>
               </div>
             </div>
-            
-            <div className="bg-white rounded-xl p-6 shadow-sm border" style={{borderColor:'#c8ced1'}}>
+
+            <div className="bg-white rounded-xl p-6 shadow-sm border" style={{ borderColor: '#c8ced1' }}>
               <div className="flex items-center space-x-3">
                 <div className="w-12 h-12 bg-[#889260] rounded-lg flex items-center justify-center">
                   <CheckCircle className="w-6 h-6 text-white" />
@@ -292,8 +313,8 @@ const CounselorDashboard = () => {
                 </div>
               </div>
             </div>
-            
-            <div className="bg-white rounded-xl p-6 shadow-sm border" style={{borderColor:'#c8ced1'}}>
+
+            <div className="bg-white rounded-xl p-6 shadow-sm border" style={{ borderColor: '#c8ced1' }}>
               <div className="flex items-center space-x-3">
                 <div className="w-12 h-12 bg-[#cdbdd4] rounded-lg flex items-center justify-center">
                   <Star className="w-6 h-6 text-white" />
@@ -307,35 +328,32 @@ const CounselorDashboard = () => {
           </div>
 
           {/* Tab Navigation */}
-          <div className="bg-white rounded-xl mb-8 shadow-sm border" style={{borderColor:'#c8ced1'}}>
-            <div className="flex border-b" style={{borderColor:'#c8ced1'}}>
+          <div className="bg-white rounded-xl mb-8 shadow-sm border" style={{ borderColor: '#c8ced1' }}>
+            <div className="flex border-b" style={{ borderColor: '#c8ced1' }}>
               <button
                 onClick={() => setActiveTab('appointments')}
-                className={`px-6 py-4 font-semibold transition-colors ${
-                  activeTab === 'appointments' 
-                    ? 'text-[#3d9098] border-b-2 border-[#3d9098]' 
-                    : 'text-[#767272] hover:text-[#2e2f34]'
-                }`}
+                className={`px-6 py-4 font-semibold transition-colors ${activeTab === 'appointments'
+                  ? 'text-[#3d9098] border-b-2 border-[#3d9098]'
+                  : 'text-[#767272] hover:text-[#2e2f34]'
+                  }`}
               >
                 Appointments
               </button>
               <button
                 onClick={() => setActiveTab('profile')}
-                className={`px-6 py-4 font-semibold transition-colors ${
-                  activeTab === 'profile' 
-                    ? 'text-[#3d9098] border-b-2 border-[#3d9098]' 
-                    : 'text-[#767272] hover:text-[#2e2f34]'
-                }`}
+                className={`px-6 py-4 font-semibold transition-colors ${activeTab === 'profile'
+                  ? 'text-[#3d9098] border-b-2 border-[#3d9098]'
+                  : 'text-[#767272] hover:text-[#2e2f34]'
+                  }`}
               >
                 Profile & Availability
               </button>
               <button
                 onClick={() => setActiveTab('analytics')}
-                className={`px-6 py-4 font-semibold transition-colors ${
-                  activeTab === 'analytics' 
-                    ? 'text-[#3d9098] border-b-2 border-[#3d9098]' 
-                    : 'text-[#767272] hover:text-[#2e2f34]'
-                }`}
+                className={`px-6 py-4 font-semibold transition-colors ${activeTab === 'analytics'
+                  ? 'text-[#3d9098] border-b-2 border-[#3d9098]'
+                  : 'text-[#767272] hover:text-[#2e2f34]'
+                  }`}
               >
                 Analytics
               </button>
@@ -346,7 +364,7 @@ const CounselorDashboard = () => {
           {activeTab === 'appointments' && (
             <div className="space-y-6">
               {/* Filters */}
-              <div className="bg-white rounded-xl p-6 shadow-sm border" style={{borderColor:'#c8ced1'}}>
+              <div className="bg-white rounded-xl p-6 shadow-sm border" style={{ borderColor: '#c8ced1' }}>
                 <div className="flex flex-col lg:flex-row gap-4">
                   <div className="flex-1 relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-[#8d949d]" />
@@ -385,11 +403,11 @@ const CounselorDashboard = () => {
               </div>
 
               {/* Appointments List */}
-              <div className="bg-white rounded-xl shadow-sm border" style={{borderColor:'#c8ced1'}}>
-                <div className="p-6 border-b" style={{borderColor:'#c8ced1'}}>
+              <div className="bg-white rounded-xl shadow-sm border" style={{ borderColor: '#c8ced1' }}>
+                <div className="p-6 border-b" style={{ borderColor: '#c8ced1' }}>
                   <h3 className="text-lg font-bold text-[#2e2f34]">Appointments ({filteredAppointments.length})</h3>
                 </div>
-                <div className="divide-y" style={{borderColor:'#c8ced1'}}>
+                <div className="divide-y" style={{ borderColor: '#c8ced1' }}>
                   {filteredAppointments.map((appointment) => (
                     <div key={appointment.id} className="p-6">
                       <div className="flex flex-col md:flex-row items-start justify-between">
@@ -403,11 +421,10 @@ const CounselorDashboard = () => {
                               <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(appointment.status)}`}>
                                 {appointment.status.charAt(0).toUpperCase() + appointment.status.slice(1)}
                               </span>
-                              <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                                appointment.type === 'first-time' 
-                                  ? 'bg-[#f2f7eb] text-[#889260]' 
-                                  : 'bg-[#eaf1f5] text-[#3d9098]'
-                              }`}>
+                              <span className={`px-2 py-1 text-xs font-semibold rounded-full ${appointment.type === 'first-time'
+                                ? 'bg-[#f2f7eb] text-[#889260]'
+                                : 'bg-[#eaf1f5] text-[#3d9098]'
+                                }`}>
                                 {appointment.type === 'first-time' ? 'First Time' : 'Follow-up'}
                               </span>
                             </div>
@@ -478,7 +495,7 @@ const CounselorDashboard = () => {
           {activeTab === 'profile' && (
             <div className="space-y-6">
               {/* Basic Profile */}
-              <div className="bg-white rounded-xl p-6 shadow-sm border" style={{borderColor:'#c8ced1'}}>
+              <div className="bg-white rounded-xl p-6 shadow-sm border" style={{ borderColor: '#c8ced1' }}>
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-lg font-bold text-[#2e2f34]">Profile Information</h3>
                   <button
@@ -498,7 +515,7 @@ const CounselorDashboard = () => {
                         <input
                           type="text"
                           value={counselorProfile.name}
-                          onChange={(e) => setCounselorProfile({...counselorProfile, name: e.target.value})}
+                          onChange={(e) => setCounselorProfile({ ...counselorProfile, name: e.target.value })}
                           className="w-full px-4 py-2 border border-[#c8ced1] rounded-lg focus:outline-none focus:border-[#3d9098]"
                         />
                       ) : (
@@ -515,7 +532,7 @@ const CounselorDashboard = () => {
                         <input
                           type="text"
                           value={counselorProfile.phone}
-                          onChange={(e) => setCounselorProfile({...counselorProfile, phone: e.target.value})}
+                          onChange={(e) => setCounselorProfile({ ...counselorProfile, phone: e.target.value })}
                           className="w-full px-4 py-2 border border-[#c8ced1] rounded-lg focus:outline-none focus:border-[#3d9098]"
                         />
                       ) : (
@@ -527,7 +544,7 @@ const CounselorDashboard = () => {
                       {editingProfile ? (
                         <select
                           value={counselorProfile.specialization}
-                          onChange={(e) => setCounselorProfile({...counselorProfile, specialization: e.target.value})}
+                          onChange={(e) => setCounselorProfile({ ...counselorProfile, specialization: e.target.value })}
                           className="w-full px-4 py-2 border border-[#c8ced1] rounded-lg focus:outline-none focus:border-[#3d9098]"
                         >
                           {specializations.map(spec => (
@@ -549,7 +566,7 @@ const CounselorDashboard = () => {
                         <input
                           type="text"
                           value={counselorProfile.experience}
-                          onChange={(e) => setCounselorProfile({...counselorProfile, experience: e.target.value})}
+                          onChange={(e) => setCounselorProfile({ ...counselorProfile, experience: e.target.value })}
                           className="w-full px-4 py-2 border border-[#c8ced1] rounded-lg focus:outline-none focus:border-[#3d9098]"
                         />
                       ) : (
@@ -562,7 +579,7 @@ const CounselorDashboard = () => {
                         <input
                           type="text"
                           value={counselorProfile.location}
-                          onChange={(e) => setCounselorProfile({...counselorProfile, location: e.target.value})}
+                          onChange={(e) => setCounselorProfile({ ...counselorProfile, location: e.target.value })}
                           className="w-full px-4 py-2 border border-[#c8ced1] rounded-lg focus:outline-none focus:border-[#3d9098]"
                         />
                       ) : (
@@ -571,25 +588,25 @@ const CounselorDashboard = () => {
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-[#2e2f34] mb-2">Working Hours</label>
-                       {editingProfile ? (
+                      {editingProfile ? (
                         <input
                           type="text"
                           value={counselorProfile.workingHours}
-                          onChange={(e) => setCounselorProfile({...counselorProfile, workingHours: e.target.value})}
+                          onChange={(e) => setCounselorProfile({ ...counselorProfile, workingHours: e.target.value })}
                           className="w-full px-4 py-2 border border-[#c8ced1] rounded-lg focus:outline-none focus:border-[#3d9098]"
                         />
                       ) : (
                         <p className="text-[#767272]">{counselorProfile.workingHours}</p>
                       )}
                     </div>
-                     <div>
+                    <div>
                       <label className="block text-sm font-medium text-[#2e2f34] mb-2">Languages</label>
                       {editingProfile ? (
                         <select
                           multiple
                           value={counselorProfile.languages}
                           onChange={(e) => setCounselorProfile({
-                            ...counselorProfile, 
+                            ...counselorProfile,
                             languages: Array.from(e.target.selectedOptions, option => option.value)
                           })}
                           className="w-full px-4 py-2 border border-[#c8ced1] rounded-lg focus:outline-none focus:border-[#3d9098] h-24"
@@ -610,7 +627,7 @@ const CounselorDashboard = () => {
                   {editingProfile ? (
                     <textarea
                       value={counselorProfile.bio}
-                      onChange={(e) => setCounselorProfile({...counselorProfile, bio: e.target.value})}
+                      onChange={(e) => setCounselorProfile({ ...counselorProfile, bio: e.target.value })}
                       className="w-full px-4 py-2 border border-[#c8ced1] rounded-lg focus:outline-none focus:border-[#3d9098] h-28"
                       rows="4"
                     />
@@ -621,14 +638,14 @@ const CounselorDashboard = () => {
               </div>
 
               {/* Availability */}
-              <div className="bg-white rounded-xl p-6 shadow-sm border" style={{borderColor:'#c8ced1'}}>
+              <div className="bg-white rounded-xl p-6 shadow-sm border" style={{ borderColor: '#c8ced1' }}>
                 <h3 className="text-lg font-bold text-[#2e2f34] mb-6">Manage Availability</h3>
                 <div className="space-y-4">
                   {days.map(day => (
-                    <div key={day} className="p-4 border rounded-lg" style={{borderColor: '#c8ced1'}}>
+                    <div key={day} className="p-4 border rounded-lg" style={{ borderColor: '#c8ced1' }}>
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-3">
-                          <input 
+                          <input
                             type="checkbox"
                             id={`day-${day}`}
                             checked={counselorProfile.availableDays.includes(day)}
@@ -672,12 +689,12 @@ const CounselorDashboard = () => {
 
           {/* Analytics Tab */}
           {activeTab === 'analytics' && (
-             <div className="bg-white rounded-xl p-12 shadow-sm border flex flex-col items-center justify-center text-center" style={{borderColor:'#c8ced1'}}>
-                <Award className="w-16 h-16 text-[#cdbdd4] mb-4"/>
-                <h3 className="text-2xl font-bold text-[#2e2f34] mb-2">Analytics Dashboard</h3>
-                <p className="text-[#767272] max-w-md">
-                    This feature is coming soon! You'll be able to see detailed insights into your sessions, student feedback, and performance metrics right here.
-                </p>
+            <div className="bg-white rounded-xl p-12 shadow-sm border flex flex-col items-center justify-center text-center" style={{ borderColor: '#c8ced1' }}>
+              <Award className="w-16 h-16 text-[#cdbdd4] mb-4" />
+              <h3 className="text-2xl font-bold text-[#2e2f34] mb-2">Analytics Dashboard</h3>
+              <p className="text-[#767272] max-w-md">
+                This feature is coming soon! You'll be able to see detailed insights into your sessions, student feedback, and performance metrics right here.
+              </p>
             </div>
           )}
 

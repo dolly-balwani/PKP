@@ -11,6 +11,7 @@ import PsychoeducationalHub from './components/PsychoeducationalHub';
 import './App.css';
 import Exercise from "./components/Exercise";
 import Meditation from "./components/Meditation";
+import CounsellorOnboarding from "./components/CounsellorOnboarding";
 function App() {
   return (
     <Routes>
@@ -18,7 +19,8 @@ function App() {
       <Route path="/" element={<LoginPage />} />
       <Route path="/register-user" element={<SignupPage />} />
       <Route path="/register-counsellor" element={<SignupPage />} />
-    
+
+      {/* Protected User Routes */}
       <Route
         path="/mainpage"
         element={
@@ -55,7 +57,7 @@ function App() {
         path="/exercise"
         element={
           <ProtectedRoute requiredUserType="user">
-            < Exercise/>
+            < Exercise />
           </ProtectedRoute>
         }
       />
@@ -63,7 +65,7 @@ function App() {
         path="/meditation"
         element={
           <ProtectedRoute requiredUserType="user">
-            < Meditation/>
+            < Meditation />
           </ProtectedRoute>
         }
       />
@@ -74,6 +76,14 @@ function App() {
         element={
           <ProtectedRoute requiredUserType="counsellor">
             <CounsellorDashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/counsellor-onboarding"
+        element={
+          <ProtectedRoute requiredUserType="counsellor">
+            <CounsellorOnboarding />
           </ProtectedRoute>
         }
       />
