@@ -17,10 +17,12 @@ import {
   ArrowRight
 } from 'lucide-react';
 import Sidebar from './Sidebar';
+import { useAuth } from '../context/AuthContext';
 
 const MainPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { currentUser } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
 
@@ -153,12 +155,13 @@ const MainPage = () => {
                   <div className="w-8 h-8 bg-[#fbecb3] rounded-lg flex items-center justify-center">
                     <greeting.icon className="w-5 h-5 text-[#eac163]" />
                   </div>
-                  <h2 className="text-2xl font-bold text-[#2e2f34]">{greeting.text}, Student!</h2>
+                  <h2 className="text-2xl font-bold text-[#2e2f34]">{greeting.text}, {currentUser?.displayName || 'Student'}!</h2>
                 </div>
                 <p className="text-base text-[#767272]">How are you feeling today?</p>
               </div>
             </div>
             <div className="flex items-center space-x-3">
+              
               <button className="relative p-2.5 rounded-lg bg-[#2dc8ca] hover:opacity-90 transition-colors group">
                 <Bell className="w-5 h-5 text-white" />
                 <span className="absolute -top-1 -right-1 w-4 h-4 bg-[#f38788] rounded-full flex items-center justify-center">
@@ -166,7 +169,9 @@ const MainPage = () => {
                 </span>
               </button>
               <div className="w-10 h-10 bg-[#7d7074] rounded-lg flex items-center justify-center cursor-pointer hover:opacity-90 transition-colors">
-                <span className="text-white font-bold text-sm">A</span>
+                <span className="text-white font-bold text-sm">
+                  {currentUser?.displayName?.[0]?.toUpperCase() || currentUser?.email?.[0]?.toUpperCase() || 'A'}
+                </span>
               </div>
             </div>
           </div>

@@ -78,16 +78,7 @@ const Sidebar = ({
           </div>
           
           {/* User Info */}
-          {currentUser && (
-            <div className="mt-4 p-3 bg-[#eaf1f5] rounded-lg">
-              <p className="text-sm font-semibold text-[#2e2f34] truncate">
-                {currentUser.displayName || 'User'}
-              </p>
-              <p className="text-xs text-[#8d949d] truncate">
-                {currentUser.email}
-              </p>
-            </div>
-          )}
+          
         </div>
 
         <nav className="p-4 space-y-2 overflow-y-auto flex-1">
