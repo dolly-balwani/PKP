@@ -9,7 +9,8 @@ import BookCounselor from './components/BookCounselor';
 import CounsellorDashboard from './components/CounsellorDashboard';
 import PsychoeducationalHub from './components/PsychoeducationalHub';
 import './App.css';
-
+import Exercise from "./components/Exercise";
+import Meditation from "./components/Meditation";
 function App() {
   return (
     <Routes>
@@ -17,7 +18,8 @@ function App() {
       <Route path="/" element={<LoginPage />} />
       <Route path="/register-user" element={<SignupPage />} />
       <Route path="/register-counsellor" element={<SignupPage />} />
-
+      <Route path="/exercise" element={<Exercise />} />
+    <Route path="/meditation" element={<Meditation />} />
       {/* Protected User Routes */}
       <Route
         path="/mainpage"
