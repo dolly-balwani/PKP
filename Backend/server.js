@@ -1,33 +1,44 @@
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-const connectDB = require('./config/db');
-const userRoutes = require('./routes/userRoutes');
-const counsellorRoutes = require('./routes/counsellorRoutes');
-const appointmentRoutes = require('./routes/appointmentRoutes');
+import express from "express";
+import mongoose from "mongoose";
+import dotenv from "dotenv";
+import cors from "cors";
 
-// Connect to Database
-connectDB();
+// Routes
+import chatRouter from "./Routes/chatRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
+import counsellorRoutes from "./routes/counsellorRoutes.js";
+import appointmentRoutes from "./routes/appointmentRoutes.js";
+
+dotenv.config();
 
 const app = express();
 
-// Middleware
+/* ---------- Middleware ---------- */
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: process.env.CORS_ORIGIN || "http://localhost:4000",
+  optionsSuccessStatus: 200,
+}));
 
-// Routes
-app.use('/api/users', userRoutes);
-app.use('/api/counsellors', counsellorRoutes);
-app.use('/api/appointments', appointmentRoutes);
+/* ---------- Routes ---------- */
+app.use("/api/chat", chatRouter);
+app.use("/api/users", userRoutes);
+app.use("/api/counsellors", counsellorRoutes);
+app.use("/api/appointments", appointmentRoutes);
 
-// Test Route
-app.get('/api/health', (req, res) => {
-    res.json({ message: 'API is running successfully' });
+// Health check
+app.get("/api/health", (req, res) => {
+  res.json({ message: "API is running successfully ✅" });
 });
 
-// Start Server
-const PORT = process.env.PORT || 5000;
+/* ---------- Database ---------- */
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => console.log("✅ MongoDB Connected"))
+  .catch((err) => console.error("❌ MongoDB Error:", err));
 
+/* ---------- Server ---------- */
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
 });
