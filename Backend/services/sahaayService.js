@@ -13,7 +13,8 @@ const analyzer = new SentimentAnalyzer('English', PorterStemmer, 'afinn');
 // Crisis keywords that require immediate attention
 const CRISIS_KEYWORDS = [
   'suicide', 'kill myself', 'end it all', 'want to die', 'end my life',
-  'can\'t go on', 'no way out', 'better off dead'
+  'can\'t go on', 'no way out', 'better off dead', 'ending everything', 'end everything',
+  'kill me', 'die', 'I want to die'
 ];
 
 // Words that indicate distress
@@ -93,19 +94,27 @@ export const analyzeTone = (message) => {
   try {
     const tokens = tokenizer.tokenize(message.toLowerCase()) || [];
     const sentiment = analyzer.getSentiment(tokens);
-    
+
     // Simple emotion detection based on keywords and sentiment
     let primaryEmotion = 'neutral';
     let secondaryEmotion = null;
-    
+
+    // FORCE NEGATIVE SENTIMENT if any crisis or distress words are present
+    // This overrides positive words like "like", "love", "great"
+    const lowerMessage = message.toLowerCase();
+    if (CRISIS_KEYWORDS.some(k => lowerMessage.includes(k)) ||
+      DISTRESS_WORDS.some(w => lowerMessage.includes(w))) {
+      sentiment = -2; // Force highly negative
+    }
+
     if (sentiment > 0.5) {
       primaryEmotion = 'happy';
     } else if (sentiment < -0.5) {
       primaryEmotion = 'sad';
     }
-    
+
     // Check for specific emotional words
-    const lowerMessage = message.toLowerCase();
+    // variable 'lowerMessage' is already declared above
     if (/(anxio|worry|nervous|scared|fear)/.test(lowerMessage)) {
       secondaryEmotion = secondaryEmotion || 'anxious';
     }
@@ -115,7 +124,7 @@ export const analyzeTone = (message) => {
     if (/(sad|depress|hopeless|worthless)/.test(lowerMessage)) {
       secondaryEmotion = secondaryEmotion || 'sad';
     }
-    
+
     return {
       score: Math.round((sentiment + 5) * 1.25), // Convert to 1-10 scale
       primaryEmotion,
@@ -136,23 +145,23 @@ export const analyzeTone = (message) => {
 // Detect distress level from message content
 export const detectDistressLevel = (message, toneAnalysis) => {
   const lowerMessage = message.toLowerCase();
-  
+
   // Check for crisis keywords (Level 4)
   if (CRISIS_KEYWORDS.some(keyword => lowerMessage.includes(keyword))) {
     return 4; // Crisis
   }
-  
+
   // Check for high distress words and phrases (Level 3)
   const highDistressWords = ['overwhelmed', 'can\'t cope', 'panic', 'terrified', 'hopeless'];
   if (highDistressWords.some(word => lowerMessage.includes(word)) || toneAnalysis.score <= 2) {
     return 3; // High
   }
-  
+
   // Check for moderate distress (Level 2)
   if (DISTRESS_WORDS.some(word => lowerMessage.includes(word)) || toneAnalysis.score <= 4) {
     return 2; // Moderate
   }
-  
+
   // Default to mild distress (Level 1)
   return 1; // Mild
 };
@@ -161,13 +170,17 @@ export const detectDistressLevel = (message, toneAnalysis) => {
 const identifyCognitiveDistortions = (tokens) => {
   const distortions = [];
   const text = tokens.join(' ').toLowerCase();
-  
+
   for (const [type, triggers] of Object.entries(COGNITIVE_DISTORTIONS)) {
-    if (triggers.some(trigger => text.includes(trigger))) {
+    if (triggers.some(trigger => {
+      // Use word boundary regex for whole word matching
+      const regex = new RegExp(`\\b${trigger}\\b`, 'i');
+      return regex.test(text);
+    })) {
       distortions.push(type);
     }
   }
-  
+
   return distortions;
 };
 
@@ -176,19 +189,19 @@ export const generateResponse = async (message, distressLevel, messageHistory) =
   const tone = analyzeTone(message);
   const tokens = tokenizer.tokenize(message.toLowerCase()) || [];
   const cognitiveDistortions = identifyCognitiveDistortions(tokens);
-  
+
   // Base response structure
   let response = {
     text: '',
     interventionType: 'general',
     requiresFollowUp: false
   };
-  
+
   // Add validation and normalization
   response.text += getValidationStatement(tone);
-  
+
   // Choose intervention based on distress level
-  switch(distressLevel) {
+  switch (distressLevel) {
     case 4: // Crisis
       response.text += '\n\nI want you to know that you\'re not alone. What you\'re experiencing sounds very painful, and I\'m here with you. ';
       response.text += 'I want to make sure you\'re safe. Could you tell me if you have a plan to harm yourself?';
@@ -197,17 +210,17 @@ export const generateResponse = async (message, distressLevel, messageHistory) =
       response.interventionType = 'crisis';
       response.requiresFollowUp = true;
       break;
-      
+
     case 3: // High distress - use DBT skills
       response.text += '\n\nI can hear how much pain you\'re in right now. Let\'s try to ground ourselves together. ';
       response.text += 'First, can you take a slow breath with me? Breathe in for 4... hold for 4... and out for 6...';
       response.text += '\n\n' + getRandomSkill('distressTolerance');
       response.interventionType = 'DBT';
       break;
-      
+
     case 2: // Moderate distress - explore thoughts and feelings
       if (cognitiveDistortions.length > 0) {
-        response.text += '\n\nI notice you might be experiencing a thought pattern called ' + 
+        response.text += '\n\nI notice you might be experiencing a thought pattern called ' +
           formatCognitiveDistortion(cognitiveDistortions[0]) + '. ';
         response.text += 'Would you be open to exploring that thought a bit more?';
         response.interventionType = 'CBT';
@@ -216,17 +229,17 @@ export const generateResponse = async (message, distressLevel, messageHistory) =
         response.text += ' Sometimes putting feelings into words can help us understand them better.';
       }
       break;
-        
+
     case 1: // Mild distress - general support
     default:
       response.text += '\n\nThank you for sharing that with me. ';
       response.text += 'Would you like to explore this further, or is there something specific you\'d like help with today?';
       break;
   }
-  
+
   // Add appropriate emoji based on tone
   response.text = addEmoji(response.text, tone.primaryEmotion);
-  
+
   return response;
 };
 
@@ -255,15 +268,19 @@ const getValidationStatement = (tone) => {
     `That sounds really ${tone.primaryEmotion}.`,
     `I can feel the ${tone.primaryEmotion} in your words.`
   ];
-  
+
+  if (tone.primaryEmotion === 'neutral') {
+    return "I'm listening. Please go on.";
+  }
+
   return validations[Math.floor(Math.random() * validations.length)];
 };
 
 // Helper function to add appropriate emoji
 const addEmoji = (text, emotion) => {
   let emoji = '';
-  
-  switch(emotion) {
+
+  switch (emotion) {
     case 'happy':
       emoji = HAPPY_EMOJIS[Math.floor(Math.random() * HAPPY_EMOJIS.length)];
       break;
@@ -273,6 +290,6 @@ const addEmoji = (text, emotion) => {
     default:
       emoji = NEUTRAL_EMOJIS[Math.floor(Math.random() * NEUTRAL_EMOJIS.length)];
   }
-  
+
   return `${text} ${emoji}`;
 };

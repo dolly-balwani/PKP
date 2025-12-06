@@ -1,7 +1,7 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import axios from 'axios';
 
-const API_BASE = "http://localhost:9000/api"; // Updated base URL
+const API_BASE = "http://localhost:5000/api/sahaay"; // Updated base URL
 
 const useSahaayChat = () => {
   const [messages, setMessages] = useState([
@@ -62,25 +62,25 @@ const useSahaayChat = () => {
     try {
       setError(null);
       setIsTyping(true);
-      
-      const response = await api.post('/sessions/start', {
+
+      const response = await api.post('/start_session', {
         userId,
         initialDistressScore: 1
       });
-      
+
       setSessionId(response.data.sessionId);
       setIsSessionActive(true);
       setIsTyping(false);
-      
+
       // Add welcome message from the server if available
       if (response.data.welcomeMessage) {
         addMessage(response.data.welcomeMessage, 'bot');
       }
-      
+
       return response.data.sessionId;
     } catch (err) {
       console.error('Start session error:', err);
-      setError("Failed to start chat. Please try again.");
+      setError(`Failed to start chat: ${err.response?.data?.error || err.message}`);
       addSystemMessage("Session could not start. Please try again.", 'error');
       setIsTyping(false);
       return null;
@@ -103,7 +103,8 @@ const useSahaayChat = () => {
     if (!sessionId) return;
     try {
       setIsTyping(true);
-      await api.post(`/sessions/${sessionId}/end`, {
+      await api.post(`/end_session`, {
+        sessionId,
         userId
       });
       setIsSessionActive(false);
@@ -148,23 +149,24 @@ const useSahaayChat = () => {
 
       const botMessage = {
         id: Date.now() + 1,
-        text: response.data.response,
+        text: response.data.response.text,
         sender: 'bot',
         timestamp: new Date(),
-        type: response.data.type || 'text',
-        data: response.data.data || null
+        interventionType: response.data.response.interventionType,
+        type: 'text',
+        data: null
       };
 
       setMessages(prev => [...prev, botMessage]);
-      
+
       if (response.data.distressScore !== undefined) {
         setDistressLevel(response.data.distressScore);
       }
-      
+
       if (response.data.sessionId && response.data.sessionId !== sessionId) {
         setSessionId(response.data.sessionId);
       }
-      
+
     } catch (err) {
       console.error('Error sending message:', err);
       addSystemMessage("I'm having trouble connecting. Please try again.", 'error');
@@ -174,36 +176,27 @@ const useSahaayChat = () => {
   }, [sessionId, userId, distressLevel, isSessionActive, startSession, addSystemMessage, api]);
 
   // Initialize session on mount
+  // Initialize session on mount
+  const initializingRef = useRef(false);
+
   useEffect(() => {
     const initializeChat = async () => {
+      // Prevent double initialization
+      if (initializingRef.current || isSessionActive) return;
+      initializingRef.current = true;
+
       try {
-        // Check for existing session
-        const response = await api.get('/sessions/active');
-        if (response.data.active) {
-          setSessionId(response.data.sessionId);
-          setIsSessionActive(true);
-          // Optionally load previous messages
-          if (response.data.messages?.length) {
-            setMessages(prev => [...prev, ...response.data.messages]);
-          }
-        } else {
-          await startSession();
-        }
+        await startSession();
       } catch (err) {
         console.error('Session initialization error:', err);
-        // Fallback to starting a new session
-        await startSession();
+      } finally {
+        initializingRef.current = false;
       }
     };
 
     initializeChat();
-    
-    return () => {
-      if (isSessionActive) {
-        endSession().catch(console.error);
-      }
-    };
-  }, [startSession, endSession, isSessionActive]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Run once on mount
 
   return {
     messages,

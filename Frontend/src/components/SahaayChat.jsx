@@ -1,9 +1,9 @@
 import React, { useRef, useEffect } from 'react';
 import { Send, User, Bot, Loader2, Heart, Shield, Sparkles, MessageCircle, X, RotateCcw, AlertTriangle } from 'lucide-react';
 import useSahaayChat from '../hooks/useSahaayChat';
-import { 
-  formatTime, 
-  getMessageStyle, 
+import {
+  formatTime,
+  getMessageStyle,
   getDistressLevelInfo,
   getInterventionTypeText,
   checkForCrisisKeywords,
@@ -20,9 +20,9 @@ const SahaayChat = () => {
     "I need help with stress",
     "I'm feeling overwhelmed"
   ]);
-  
+
   const messagesEndRef = useRef(null);
-  
+
   // Use our custom hook for chat functionality
   const {
     messages,
@@ -31,13 +31,12 @@ const SahaayChat = () => {
     sessionId,
     error,
     sendMessage,
-    clearChat,
     addSystemMessage
   } = useSahaayChat();
-  
+
   // Get distress level info
   const distressInfo = getDistressLevelInfo(distressLevel);
-  
+
   // Auto-scroll to bottom of messages
   React.useEffect(() => {
     scrollToBottom();
@@ -49,19 +48,19 @@ const SahaayChat = () => {
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
-    
+
     if (!input.trim() || !sessionId) return;
-    
+
     // Check for crisis keywords
     if (checkForCrisisKeywords(input)) {
       setShowCrisisModal(true);
     }
-    
+
     // Send message and clear input
     await sendMessage(input);
     setInput('');
   };
-  
+
   const handleQuickReply = async (text) => {
     setInput(text);
     // Small delay to allow the input to update
@@ -69,22 +68,22 @@ const SahaayChat = () => {
       document.getElementById('message-input')?.focus();
     }, 50);
   };
-  
+
   const handleClearChat = () => {
     if (window.confirm('Are you sure you want to clear the chat history?')) {
       clearChat();
     }
   };
-  
+
   const handleCrisisHelp = () => {
     setShowCrisisModal(true);
   };
-  
+
   // Show welcome message on first load
   React.useEffect(() => {
     // This is handled by our hook now
   }, []);
-  
+
   // Show error message if any
   React.useEffect(() => {
     if (error) {
@@ -115,8 +114,8 @@ const SahaayChat = () => {
       {/* Chat Container */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.map((message) => (
-          <div 
-            key={message.id} 
+          <div
+            key={message.id}
             className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
           >
             <div className={getMessageStyle(message.sender)}>
@@ -138,7 +137,7 @@ const SahaayChat = () => {
                   </div>
                 )}
               </div>
-              
+
               {message.interventionType && (
                 <div className="mt-2 pt-2 border-t border-gray-100">
                   <span className="inline-flex items-center text-xs text-teal-600">
@@ -150,7 +149,7 @@ const SahaayChat = () => {
             </div>
           </div>
         ))}
-        
+
         {isTyping && (
           <div className="flex items-center space-x-2 p-2">
             <div className="w-2 h-2 bg-teal-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
@@ -159,7 +158,7 @@ const SahaayChat = () => {
             <span className="text-sm text-gray-500 ml-2">Sahaay is thinking...</span>
           </div>
         )}
-        
+
         <div ref={messagesEndRef} />
       </div>
 
@@ -182,13 +181,13 @@ const SahaayChat = () => {
             <Send className="w-5 h-5" />
           </button>
         </div>
-        
+
         {/* Emergency Help */}
         <div className="mt-2 text-center">
           <p className="text-xs text-gray-500">
-            In crisis? <button 
-              type="button" 
-              onClick={showCrisisIntervention}
+            In crisis? <button
+              type="button"
+              onClick={handleCrisisHelp}
               className="text-teal-600 hover:underline focus:outline-none"
             >
               Get emergency help

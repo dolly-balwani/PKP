@@ -27,14 +27,12 @@ app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 // CORS Settings
 app.use(
     cors({
-        origin: process.env.CORS_ORIGIN?.split(",") || [
-            "http://localhost:3000",
-            "http://localhost:4000",
+        origin: [
             "http://localhost:5173",
-            "https://sahaay.app",
-            "https://www.sahaay.app",
+            "http://localhost:5000",
+            process.env.CORS_ORIGIN || "http://localhost:3000"
         ],
-        methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
         credentials: true,
         optionsSuccessStatus: 200,
     })

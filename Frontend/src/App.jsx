@@ -12,6 +12,7 @@ import './App.css';
 import Exercise from "./components/Exercise";
 import Meditation from "./components/Meditation";
 import CounsellorOnboarding from "./components/CounsellorOnboarding";
+import SahaayChat from "./components/SahaayChat";
 function App() {
   return (
     <Routes>
@@ -50,6 +51,14 @@ function App() {
         element={
           <ProtectedRoute requiredUserType="user">
             <PsychoeducationalHub />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/chatbot"
+        element={
+          <ProtectedRoute requiredUserType="user">
+            <SahaayChat />
           </ProtectedRoute>
         }
       />
