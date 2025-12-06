@@ -1,3 +1,4 @@
+// Frontend/src/components/Sidebar.jsx
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { 
@@ -7,12 +8,12 @@ import {
   MessageCircle, 
   Calendar, 
   Users, 
-  Menu, 
   X, 
   Settings,
   LogOut,
   Shield
 } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 const Sidebar = ({ 
   sidebarOpen, 
@@ -20,6 +21,8 @@ const Sidebar = ({
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { logout, currentUser } = useAuth();
+  
   const menuItems = [
     { id: 'dashboard', icon: BarChart3, label: 'Dashboard', color: 'bg-[#3d9098]', path: '/mainpage' },
     { id: 'assessment', icon: Heart, label: 'Self Assessment', color: 'bg-[#f99c5b]', path: '/assessment' },
@@ -28,6 +31,16 @@ const Sidebar = ({
     { id: 'booking', icon: Calendar, label: 'Book Counselor', color: 'bg-[#d8c1ad]', path: '/booking' },
     { id: 'community', icon: Users, label: 'Peer Support', color: 'bg-[#7d7074]', path: '/community' },
   ];
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/');
+    } catch (error) {
+      console.error('Logout error:', error);
+      alert('Failed to logout. Please try again.');
+    }
+  };
 
   return (
     <>
@@ -63,6 +76,18 @@ const Sidebar = ({
               <X className="w-5 h-5 text-[#2e2f34]" />
             </button>
           </div>
+          
+          {/* User Info */}
+          {currentUser && (
+            <div className="mt-4 p-3 bg-[#eaf1f5] rounded-lg">
+              <p className="text-sm font-semibold text-[#2e2f34] truncate">
+                {currentUser.displayName || 'User'}
+              </p>
+              <p className="text-xs text-[#8d949d] truncate">
+                {currentUser.email}
+              </p>
+            </div>
+          )}
         </div>
 
         <nav className="p-4 space-y-2 overflow-y-auto flex-1">
@@ -94,7 +119,10 @@ const Sidebar = ({
             </div>
             <span className="font-medium">Settings</span>
           </button>
-          <button className="w-full flex items-center space-x-3 px-4 py-3 text-[#ab5275] hover:bg-[#cdbdd4] rounded-xl transition-colors" onClick={()=>navigate('/')}>
+          <button 
+            onClick={handleLogout}
+            className="w-full flex items-center space-x-3 px-4 py-3 text-[#ab5275] hover:bg-[#cdbdd4] rounded-xl transition-colors"
+          >
             <div className="w-8 h-8 bg-[#f38788] rounded-lg flex items-center justify-center">
               <LogOut className="w-4 h-4 text-white" />
             </div>
