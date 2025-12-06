@@ -21,7 +21,7 @@ export default function LoginPage() {
 
     // Use navigate() for client-side routing
     if (userType === 'user') {
-      navigate('/dashboard');
+      navigate('/mainpage');
     } else { // userType is 'counsellor'
       navigate('/counsellor');
     }
