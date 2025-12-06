@@ -14,6 +14,7 @@ import Meditation from "./components/Meditation";
 import CounsellorOnboarding from "./components/CounsellorOnboarding";
 import SahaayChat from "./components/SahaayChat";
 import AssessmentFlow from "./components/AssessmentFlow";
+import PeerSupport from "./components/PeerSupport";
 function App() {
   return (
     <Routes>
@@ -84,6 +85,14 @@ function App() {
         element={
           <ProtectedRoute requiredUserType="user">
             < AssessmentFlow />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/peer-support"
+        element={
+          <ProtectedRoute requiredUserType="user">
+            <PeerSupport />
           </ProtectedRoute>
         }
       />
