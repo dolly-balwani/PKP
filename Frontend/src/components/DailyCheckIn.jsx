@@ -240,7 +240,7 @@ const DailyCheckIn = () => {
           {/* Header - Desktop */}
           <div className="hidden lg:flex items-center space-x-3 mb-6">
             <button 
-              onClick={() => navigate('/dashboard')} 
+              onClick={() => navigate('/mainpage')} 
               className="p-2 rounded-lg hover:bg-white transition-colors" 
               style={{background:'#c8ced1'}}
             >

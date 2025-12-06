@@ -227,7 +227,7 @@ const BookCounselor = () => {
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center space-x-4">
             <button
-              onClick={() => navigate('/dashboard')}
+              onClick={() => navigate('/mainpage')}
               className="p-2 rounded-lg hover:bg-white transition-colors"
               style={{background:'#c8ced1'}}
             >
