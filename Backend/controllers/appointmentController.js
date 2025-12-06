@@ -1,11 +1,11 @@
-const Appointment = require('../models/Appointment');
-const User = require('../models/User');
-const Counsellor = require('../models/Counsellor');
+import Appointment from '../models/Appointment.js';
+import User from '../models/User.js';
+import Counsellor from '../models/Counsellor.js';
 
 // @desc    Book a new appointment
 // @route   POST /api/appointments
 // @access  Private (Student)
-const createAppointment = async (req, res) => {
+export const createAppointment = async (req, res) => {
     const { studentId, counsellorId, date, time, reason, type } = req.body;
 
     console.log('Create Appointment Request:', { studentId, counsellorId, date, time });
@@ -59,7 +59,7 @@ const createAppointment = async (req, res) => {
 // @desc    Get appointments for a user (student or counsellor)
 // @route   GET /api/appointments
 // @access  Private
-const getAppointments = async (req, res) => {
+export const getAppointments = async (req, res) => {
     const { userId, counsellorId } = req.query;
 
     try {
@@ -88,7 +88,7 @@ const getAppointments = async (req, res) => {
 // @desc    Update appointment status
 // @route   PATCH /api/appointments/:id
 // @access  Private (Counsellor)
-const updateAppointmentStatus = async (req, res) => {
+export const updateAppointmentStatus = async (req, res) => {
     const { status, notes } = req.body;
 
     try {
@@ -109,8 +109,4 @@ const updateAppointmentStatus = async (req, res) => {
     }
 };
 
-module.exports = {
-    createAppointment,
-    getAppointments,
-    updateAppointmentStatus
-};
+// All functions are exported as named exports

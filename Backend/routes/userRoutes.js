@@ -1,8 +1,10 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const { registerUser, getUserByFirebaseUid } = require('../controllers/userController');
+
+// ❌ fix import path by adding .js
+import { registerUser, getUserByFirebaseUid } from '../controllers/userController.js';
 
 router.post('/', registerUser);
 router.get('/firebase/:uid', getUserByFirebaseUid);
 
-module.exports = router;
+export default router;

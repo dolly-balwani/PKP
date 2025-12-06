@@ -1,10 +1,10 @@
-const User = require('../models/User');
+import User from '../models/User.js';
 
 // @desc    Register a new user
 // @route   POST /api/users
 // @access  Public
-const registerUser = async (req, res) => {
-    const { firebaseUid, email, fullName, role } = req.body;
+export const registerUser = async (req, res) => {
+    const { firebaseUid, email, fullName, role = 'user' } = req.body;
 
     if (!firebaseUid || !email || !fullName) {
         return res.status(400).json({ message: 'Please provide all required fields' });
@@ -50,7 +50,10 @@ const registerUser = async (req, res) => {
 // @desc    Get user by Firebase UID
 // @route   GET /api/users/firebase/:uid
 // @access  Public (or Private)
-const getUserByFirebaseUid = async (req, res) => {
+// @desc    Get user by Firebase UID
+// @route   GET /api/users/firebase/:uid
+// @access  Public (or Private)
+export const getUserByFirebaseUid = async (req, res) => {
     try {
         const user = await User.findOne({ firebaseUid: req.params.uid });
 
@@ -67,12 +70,6 @@ const getUserByFirebaseUid = async (req, res) => {
         }
     } catch (error) {
         console.error('Get User Error:', error);
-        res.status(500).json({ message: 'Server Error' });
+        res.status(500).json({ message: 'Server Error', error: error.message });
     }
-};
-
-
-module.exports = {
-    registerUser,
-    getUserByFirebaseUid
 };
