@@ -45,93 +45,95 @@ const CounselorDashboard = () => {
   };
 
   // Counselor profile state
-  const [counselorProfile, setCounselorProfile] = useState({
-    id: 1,
-    name: 'Dr. Sarah Johnson',
-    email: 'sarah.johnson@university.edu',
-    phone: '+91 98765 43210',
-    specialization: 'Anxiety & Depression',
-    experience: '8+ years',
-    bio: 'Specialized in CBT and mindfulness-based interventions for college students. I help students navigate through anxiety, depression, and stress-related challenges.',
-    languages: ['English', 'Hindi'],
-    location: 'Main Campus - Counseling Center',
-    workingHours: 'Mon-Fri: 9:00 AM - 5:00 PM',
-    rating: 4.9,
-    totalSessions: 324,
-    avatar: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?q=80&w=1200&auto=format&fit=crop',
-    availableDays: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-    timeSlots: {
-      'Monday': ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00'],
-      'Tuesday': ['09:00', '10:00', '11:00', '14:00', '15:00'],
-      'Wednesday': ['09:00', '10:00', '14:00', '15:00', '16:00'],
-      'Thursday': ['09:00', '10:00', '11:00', '14:00', '15:00'],
-      'Friday': ['09:00', '10:00', '14:00', '15:00']
-    }
-  });
+  const [counselorProfile, setCounselorProfile] = useState(null);
+  const [appointments, setAppointments] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Appointments state
-  const [appointments, setAppointments] = useState([
-    {
-      id: 1,
-      studentName: 'Anonymous Student A',
-      studentId: 'STU001',
-      date: 'Monday',
-      time: '09:00',
-      status: 'pending',
-      type: 'first-time',
-      reason: 'Academic stress and anxiety',
-      notes: '',
-      bookedAt: '2024-01-15 10:30 AM'
-    },
-    {
-      id: 2,
-      studentName: 'Anonymous Student B',
-      studentId: 'STU002',
-      date: 'Monday',
-      time: '10:00',
-      status: 'accepted',
-      type: 'follow-up',
-      reason: 'Depression and relationship issues',
-      notes: 'Third session, showing improvement',
-      bookedAt: '2024-01-14 02:15 PM'
-    },
-    {
-      id: 3,
-      studentName: 'Anonymous Student C',
-      studentId: 'STU003',
-      date: 'Tuesday',
-      time: '14:00',
-      status: 'pending',
-      type: 'first-time',
-      reason: 'Career confusion and stress',
-      notes: '',
-      bookedAt: '2024-01-16 09:45 AM'
-    },
-    {
-      id: 4,
-      studentName: 'Anonymous Student D',
-      studentId: 'STU004',
-      date: 'Wednesday',
-      time: '15:00',
-      status: 'completed',
-      type: 'follow-up',
-      reason: 'Social anxiety',
-      notes: 'Session completed successfully, scheduled follow-up',
-      bookedAt: '2024-01-10 11:20 AM'
-    },
-    {
-      id: 5,
-      studentName: 'Anonymous Student E',
-      studentId: 'STU005',
-      date: 'Thursday',
-      time: '11:00',
-      status: 'rejected',
-      type: 'first-time',
-      reason: 'Exam stress',
-      notes: 'Referred to academic advisor',
-      bookedAt: '2024-01-12 04:30 PM'
-    }
-  ]);
+  // Fetch Data
+  useEffect(() => {
+    const fetchData = async () => {
+      const userId = localStorage.getItem('userId');
+      if (!userId) return;
+
+      try {
+        // 1. Fetch Profile
+        const profileRes = await fetch(`http://localhost:5000/api/counsellors/${userId}`);
+
+        if (profileRes.status === 404) {
+          console.log("Profile not found, redirecting to onboarding...");
+          navigate('/counsellor-onboarding');
+          return;
+        }
+
+        const profileData = await profileRes.json();
+
+        if (profileRes.ok) {
+          // Map backend profile to frontend state
+          // Generate slots object from single range
+          const slotsObj = {};
+          const startStr = profileData.availability?.slots?.[0]?.startTime || "09:00";
+          const endStr = profileData.availability?.slots?.[0]?.endTime || "17:00";
+
+          const startHour = parseInt(startStr.split(':')[0]);
+          const endHour = parseInt(endStr.split(':')[0]);
+
+          const generatedSlots = [];
+          for (let i = startHour; i < endHour; i++) {
+            generatedSlots.push(`${i.toString().padStart(2, '0')}:00`);
+          }
+
+          (profileData.availability?.days || []).forEach(day => {
+            slotsObj[day] = generatedSlots;
+          });
+
+          setCounselorProfile({
+            id: profileData._id,
+            name: profileData.user?.fullName || 'Counsellor',
+            email: profileData.user?.email,
+            phone: 'N/A', // Not in schema yet
+            specialization: profileData.specializations?.[0] || 'General',
+            experience: `${profileData.experienceYears || 0} years`,
+            bio: profileData.bio || '',
+            languages: profileData.languages || [],
+            location: 'Online',
+            workingHours: `${startStr} - ${endStr}`,
+            rating: profileData.rating?.average || 0,
+            totalSessions: 0, // Placeholder
+            avatar: profileData.user?.profileImage || 'https://ui-avatars.com/api/?name=' + (profileData.user?.fullName || 'C'),
+            availableDays: profileData.availability?.days || [],
+            timeSlots: slotsObj
+          });
+        }
+
+        // 2. Fetch Appointments
+        // We pass the User ID as 'counsellorId' query param because the Appointment model ref is 'User'
+        const aptRes = await fetch(`http://localhost:5000/api/appointments?counsellorId=${userId}`);
+        const aptData = await aptRes.json();
+
+        if (aptRes.ok) {
+          const mappedAppointments = aptData.map(apt => ({
+            id: apt._id,
+            studentName: apt.student?.fullName || 'Anonymous Student',
+            studentId: apt.student?._id,
+            date: new Date(apt.scheduledAt).toLocaleDateString('en-US', { weekday: 'long' }), // Extract day name
+            time: new Date(apt.scheduledAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false }),
+            status: apt.status,
+            type: 'first-time', // Defaulting for now
+            reason: apt.notes || 'No reason provided', // Using notes field for reason as per controller
+            notes: '', // Separate notes field
+            bookedAt: new Date(apt.createdAt).toLocaleDateString()
+          }));
+          setAppointments(mappedAppointments);
+        }
+
+      } catch (error) {
+        console.error("Dashboard Fetch Error:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
   const specializations = [
     'Anxiety & Depression',
@@ -160,12 +162,28 @@ const CounselorDashboard = () => {
     return matchesSearch && matchesFilter && matchesDate;
   });
 
-  const handleAppointmentAction = (appointmentId, action, notes = '') => {
-    setAppointments(prev => prev.map(apt =>
-      apt.id === appointmentId
-        ? { ...apt, status: action, notes: notes || apt.notes }
-        : apt
-    ));
+  const handleAppointmentAction = async (appointmentId, action, notes = '') => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/appointments/${appointmentId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: action, notes })
+      });
+
+      if (response.ok) {
+        setAppointments(prev => prev.map(apt =>
+          apt.id === appointmentId
+            ? { ...apt, status: action, notes: notes || apt.notes }
+            : apt
+        ));
+        alert(`Appointment ${action} successfully.`);
+      } else {
+        alert('Failed to update appointment status.');
+      }
+    } catch (error) {
+      console.error('Update Error:', error);
+      alert('Server connection failed.');
+    }
   };
 
   const handleProfileUpdate = () => {
@@ -230,6 +248,10 @@ const CounselorDashboard = () => {
   };
 
   const pendingCount = appointments.filter(a => a.status === 'pending').length;
+
+  if (loading || !counselorProfile) {
+    return <div className="flex justify-center items-center h-screen">Loading Dashboard...</div>;
+  }
 
   return (
     <div className="min-h-screen bg-[#eaf1f5]">

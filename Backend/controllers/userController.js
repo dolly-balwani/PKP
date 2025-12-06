@@ -47,6 +47,32 @@ const registerUser = async (req, res) => {
     }
 };
 
+// @desc    Get user by Firebase UID
+// @route   GET /api/users/firebase/:uid
+// @access  Public (or Private)
+const getUserByFirebaseUid = async (req, res) => {
+    try {
+        const user = await User.findOne({ firebaseUid: req.params.uid });
+
+        if (user) {
+            res.json({
+                _id: user._id,
+                firebaseUid: user.firebaseUid,
+                email: user.email,
+                fullName: user.fullName,
+                role: user.role
+            });
+        } else {
+            res.status(404).json({ message: 'User not found' });
+        }
+    } catch (error) {
+        console.error('Get User Error:', error);
+        res.status(500).json({ message: 'Server Error' });
+    }
+};
+
+
 module.exports = {
-    registerUser
+    registerUser,
+    getUserByFirebaseUid
 };

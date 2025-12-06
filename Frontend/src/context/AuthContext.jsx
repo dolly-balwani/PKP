@@ -136,7 +136,8 @@ export const AuthProvider = ({ children }) => {
     logout,
     resetPassword,
     signInWithGoogle,
-    loading
+    loading,
+    setUserType // Exposed for manual updates after fetching from backend
   };
 
   return (

@@ -4,6 +4,7 @@ const cors = require('cors');
 const connectDB = require('./config/db');
 const userRoutes = require('./routes/userRoutes');
 const counsellorRoutes = require('./routes/counsellorRoutes');
+const appointmentRoutes = require('./routes/appointmentRoutes');
 
 // Connect to Database
 connectDB();
@@ -17,6 +18,7 @@ app.use(cors());
 // Routes
 app.use('/api/users', userRoutes);
 app.use('/api/counsellors', counsellorRoutes);
+app.use('/api/appointments', appointmentRoutes);
 
 // Test Route
 app.get('/api/health', (req, res) => {

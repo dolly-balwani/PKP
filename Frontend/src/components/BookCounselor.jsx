@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  Calendar, 
-  Clock, 
-  User, 
-  Star, 
-  CheckCircle, 
+import {
+  Calendar,
+  Clock,
+  User,
+  Star,
+  CheckCircle,
   ArrowLeft,
   Filter,
   Search,
@@ -53,100 +53,66 @@ const BookCounselor = () => {
     }
   }, [existingAppointments]);
 
-  const counselors = [
-    {
-      id: 1,
-      name: 'Dr. Sarah Johnson',
-      specialization: 'Anxiety & Depression',
-      experience: '8+ years',
-      rating: 4.9,
-      reviews: 127,
-      avatar: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?q=80&w=1200&auto=format&fit=crop',
-      bio: 'Specialized in CBT and mindfulness-based interventions for college students.',
-      languages: ['English', 'Hindi'],
-      location: 'Main Campus - Counseling Center',
-      phone: '+91 98765 43210',
-      email: 'sarah.johnson@university.edu',
-      availableDays: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-      timeSlots: {
-        'Monday': ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00'],
-        'Tuesday': ['09:00', '10:00', '11:00', '14:00', '15:00'],
-        'Wednesday': ['09:00', '10:00', '14:00', '15:00', '16:00'],
-        'Thursday': ['09:00', '10:00', '11:00', '14:00', '15:00'],
-        'Friday': ['09:00', '10:00', '14:00', '15:00']
-      },
-      nextAvailable: 'Tomorrow 2:00 PM',
-      isAvailable: true
-    },
-    {
-      id: 2,
-      name: 'Dr. Rajesh Kumar',
-      specialization: 'Academic Stress & Career Counseling',
-      experience: '6+ years',
-      rating: 4.8,
-      reviews: 89,
-      avatar: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?q=80&w=1200&auto=format&fit=crop',
-      bio: 'Expert in helping students manage academic pressure and career transitions.',
-      languages: ['Hindi', 'English', 'Tamil'],
-      location: 'North Campus - Student Services',
-      phone: '+91 98765 43211',
-      email: 'rajesh.kumar@university.edu',
-      availableDays: ['Monday', 'Wednesday', 'Friday'],
-      timeSlots: {
-        'Monday': ['10:00', '11:00', '15:00', '16:00'],
-        'Wednesday': ['09:00', '10:00', '14:00', '15:00'],
-        'Friday': ['10:00', '11:00', '14:00', '15:00', '16:00']
-      },
-      nextAvailable: 'Monday 10:00 AM',
-      isAvailable: true
-    },
-    {
-      id: 3,
-      name: 'Dr. Priya Sharma',
-      specialization: 'Relationship & Social Issues',
-      experience: '5+ years',
-      rating: 4.7,
-      reviews: 76,
-      avatar: 'https://images.unsplash.com/photo-1594824388852-8a0a4b4b8b8b?q=80&w=1200&auto=format&fit=crop',
-      bio: 'Specialized in interpersonal relationships and social anxiety management.',
-      languages: ['English', 'Hindi', 'Punjabi'],
-      location: 'South Campus - Wellness Center',
-      phone: '+91 98765 43212',
-      email: 'priya.sharma@university.edu',
-      availableDays: ['Tuesday', 'Thursday', 'Saturday'],
-      timeSlots: {
-        'Tuesday': ['09:00', '10:00', '11:00', '14:00'],
-        'Thursday': ['09:00', '10:00', '15:00', '16:00'],
-        'Saturday': ['10:00', '11:00', '14:00']
-      },
-      nextAvailable: 'Tuesday 9:00 AM',
-      isAvailable: true
-    },
-    {
-      id: 4,
-      name: 'Dr. Amit Patel',
-      specialization: 'Crisis Intervention & Trauma',
-      experience: '10+ years',
-      rating: 4.9,
-      reviews: 156,
-      avatar: 'https://images.unsplash.com/photo-1582750433449-648ed127bb54?q=80&w=1200&auto=format&fit=crop',
-      bio: 'Experienced in crisis intervention and trauma-informed care for students.',
-      languages: ['English', 'Hindi', 'Gujarati'],
-      location: 'Main Campus - Emergency Counseling',
-      phone: '+91 98765 43213',
-      email: 'amit.patel@university.edu',
-      availableDays: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-      timeSlots: {
-        'Monday': ['09:00', '10:00', '11:00', '14:00', '15:00'],
-        'Tuesday': ['09:00', '10:00', '14:00', '15:00', '16:00'],
-        'Wednesday': ['09:00', '10:00', '11:00', '14:00'],
-        'Thursday': ['09:00', '10:00', '11:00', '15:00', '16:00'],
-        'Friday': ['09:00', '10:00', '14:00', '15:00']
-      },
-      nextAvailable: 'Today 3:00 PM',
-      isAvailable: true
-    }
-  ];
+  const [counselors, setCounselors] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch real counsellors from backend
+  useEffect(() => {
+    const fetchCounsellors = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/counsellors');
+        const data = await response.json();
+
+        // Transform backend data to match UI structure
+        const transformed = data.map(c => {
+          // Generate hourly slots from the single start/end range
+          const slotsObj = {};
+          const startStr = c.availability?.slots?.[0]?.startTime || "09:00";
+          const endStr = c.availability?.slots?.[0]?.endTime || "17:00";
+
+          const startHour = parseInt(startStr.split(':')[0]);
+          const endHour = parseInt(endStr.split(':')[0]);
+
+          const generatedSlots = [];
+          for (let i = startHour; i < endHour; i++) {
+            generatedSlots.push(`${i.toString().padStart(2, '0')}:00`);
+          }
+
+          (c.availability?.days || []).forEach(day => {
+            slotsObj[day] = generatedSlots;
+          });
+
+          return {
+            id: c._id, // This is Counsellor Profile ID
+            userId: c.user?._id, // This is the User ID (needed for appointment)
+            name: c.user?.fullName || 'Unknown Counselor',
+            specialization: c.specializations?.join(', ') || 'General',
+            experience: `${c.experienceYears || 0}+ years`,
+            rating: c.rating?.average || 5.0,
+            reviews: c.rating?.count || 0,
+            avatar: c.user?.profileImage || 'https://ui-avatars.com/api/?name=' + (c.user?.fullName || 'C'),
+            bio: c.bio || 'Experienced counsellor ready to help.',
+            languages: c.languages || ['English'],
+            location: 'Online / Campus',
+            phone: 'Contact via App',
+            email: c.user?.email,
+            availableDays: c.availability?.days || [],
+            timeSlots: slotsObj,
+            nextAvailable: 'Check Availability',
+            isAvailable: true
+          };
+        });
+
+        setCounselors(transformed);
+      } catch (error) {
+        console.error('Failed to fetch counsellors:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCounsellors();
+  }, []);
 
   const specializations = [
     'all',
@@ -158,9 +124,9 @@ const BookCounselor = () => {
 
   const filteredCounselors = counselors.filter(counselor => {
     const matchesSearch = counselor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         counselor.specialization.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesSpecialization = filterSpecialization === 'all' || 
-                                 counselor.specialization === filterSpecialization;
+      counselor.specialization.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSpecialization = filterSpecialization === 'all' ||
+      counselor.specialization === filterSpecialization;
     return matchesSearch && matchesSpecialization;
   });
 
@@ -174,28 +140,63 @@ const BookCounselor = () => {
     }
   };
 
-  const handleBookAppointment = (counselorId) => {
+  const handleBookAppointment = async (counselorId) => {
     if (!selectedDate || !selectedTimeSlot) {
       alert('Please select both date and time slot');
       return;
     }
-    
-    // Here you would typically make an API call to book the appointment
-    const newAppointment = {
-      id: Date.now(),
-      counselorId,
-      counselorName: counselors.find(c => c.id === counselorId)?.name,
-      date: selectedDate,
-      time: selectedTimeSlot,
-      status: 'upcoming',
-      type: 'new'
-    };
-    
-    setExistingAppointments(prev => [...prev, newAppointment]);
-    alert('Appointment booked successfully!');
-    setSelectedCounselor(null);
-    setSelectedDate('');
-    setSelectedTimeSlot('');
+
+    // Find selected counsellor object to extract IDs
+    const currentCounselor = counselors.find(c => c.id === counselorId);
+    if (!currentCounselor) return;
+
+    // Get current student ID
+    const studentId = localStorage.getItem('userId');
+    if (!studentId) {
+      alert("Please log in again.");
+      return;
+    }
+
+    try {
+      const response = await fetch('http://localhost:5000/api/appointments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          studentId,
+          counsellorId: currentCounselor.userId, // Send the User ID of the counsellor
+          date: selectedDate,
+          time: selectedTimeSlot,
+          reason: 'Requested via App',
+          type: 'first-time'
+        })
+      });
+
+      if (response.ok) {
+        const savedAppointment = await response.json();
+        // Transform for local state
+        const newAppointment = {
+          id: savedAppointment._id,
+          counselorId: currentCounselor.id,
+          counselorName: currentCounselor.name,
+          date: selectedDate,
+          time: selectedTimeSlot,
+          status: 'pending', // Default backend status
+          type: 'new'
+        };
+
+        setExistingAppointments(prev => [...prev, newAppointment]);
+        alert('Appointment request sent successfully!');
+        setSelectedCounselor(null);
+        setSelectedDate('');
+        setSelectedTimeSlot('');
+      } else {
+        const err = await response.json();
+        alert('Failed to book: ' + (err.message || 'Unknown error'));
+      }
+    } catch (error) {
+      console.error('Booking error:', error);
+      alert('Data transmission failed.');
+    }
   };
 
   const handleRebookAppointment = (appointmentId) => {
@@ -221,7 +222,7 @@ const BookCounselor = () => {
 
   return (
     <div className="min-h-screen bg-[#eaf1f5] p-6">
-      
+
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
@@ -229,7 +230,7 @@ const BookCounselor = () => {
             <button
               onClick={() => navigate('/mainpage')}
               className="p-2 rounded-lg hover:bg-white transition-colors"
-              style={{background:'#c8ced1'}}
+              style={{ background: '#c8ced1' }}
             >
               <ArrowLeft className="w-5 h-5 text-[#2e2f34]" />
             </button>
@@ -245,11 +246,11 @@ const BookCounselor = () => {
           <>
             {/* Upcoming */}
             {existingAppointments.filter(a => a.status === 'upcoming').length > 0 && (
-              <div className="bg-white rounded-xl p-6 mb-8 shadow-sm border" style={{borderColor:'#c8ced1'}}>
+              <div className="bg-white rounded-xl p-6 mb-8 shadow-sm border" style={{ borderColor: '#c8ced1' }}>
                 <h2 className="text-xl font-bold text-[#2e2f34] mb-4">Upcoming Appointments</h2>
                 <div className="space-y-3">
                   {existingAppointments.filter(a => a.status === 'upcoming').map((appointment) => (
-                    <div key={appointment.id} className="flex items-center justify-between p-4 rounded-lg border" style={{borderColor:'#c8ced1'}}>
+                    <div key={appointment.id} className="flex items-center justify-between p-4 rounded-lg border" style={{ borderColor: '#c8ced1' }}>
                       <div className="flex items-center space-x-4">
                         <div className="w-10 h-10 bg-[#3d9098] rounded-lg flex items-center justify-center">
                           <Calendar className="w-5 h-5 text-white" />
@@ -276,11 +277,11 @@ const BookCounselor = () => {
 
             {/* History */}
             {existingAppointments.filter(a => a.status !== 'upcoming').length > 0 && (
-              <div className="bg-white rounded-xl p-6 mb-8 shadow-sm border" style={{borderColor:'#c8ced1'}}>
+              <div className="bg-white rounded-xl p-6 mb-8 shadow-sm border" style={{ borderColor: '#c8ced1' }}>
                 <h2 className="text-xl font-bold text-[#2e2f34] mb-4">Previous Appointments</h2>
                 <div className="space-y-3">
                   {existingAppointments.filter(a => a.status !== 'upcoming').map((appointment) => (
-                    <div key={appointment.id} className="flex items-center justify-between p-4 rounded-lg border" style={{borderColor:'#c8ced1'}}>
+                    <div key={appointment.id} className="flex items-center justify-between p-4 rounded-lg border" style={{ borderColor: '#c8ced1' }}>
                       <div className="flex items-center space-x-4">
                         <div className="w-10 h-10 bg-[#7d7074] rounded-lg flex items-center justify-center">
                           <Calendar className="w-5 h-5 text-white" />
@@ -306,7 +307,7 @@ const BookCounselor = () => {
         )}
 
         {/* Search and Filters */}
-        <div className="bg-white rounded-xl p-6 mb-8 shadow-sm border" style={{borderColor:'#c8ced1'}}>
+        <div className="bg-white rounded-xl p-6 mb-8 shadow-sm border" style={{ borderColor: '#c8ced1' }}>
           <div className="flex flex-col lg:flex-row gap-4">
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-[#8d949d]" />
@@ -345,7 +346,7 @@ const BookCounselor = () => {
         {/* Counselors Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {filteredCounselors.map((counselor) => (
-            <div key={counselor.id} className="bg-white rounded-xl p-6 shadow-sm border hover:shadow-md transition-shadow" style={{borderColor:'#c8ced1'}}>
+            <div key={counselor.id} className="bg-white rounded-xl p-6 shadow-sm border hover:shadow-md transition-shadow" style={{ borderColor: '#c8ced1' }}>
               <div className="flex items-start space-x-4 mb-4">
                 <img
                   src={counselor.avatar}
@@ -408,13 +409,13 @@ const BookCounselor = () => {
 
         {/* Booking Modal */}
         {selectedCounselor && (
-          <div 
+          <div
             className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm z-50 flex items-center justify-center p-4"
             onClick={() => setSelectedCounselor(null)}
           >
-            <div 
+            <div
               className="bg-white rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-xl border"
-              style={{borderColor:'#c8ced1'}}
+              style={{ borderColor: '#c8ced1' }}
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center justify-between mb-6">
@@ -455,11 +456,10 @@ const BookCounselor = () => {
                         <button
                           key={time}
                           onClick={() => setSelectedTimeSlot(time)}
-                          className={`p-3 rounded-lg border transition-colors ${
-                            selectedTimeSlot === time
+                          className={`p-3 rounded-lg border transition-colors ${selectedTimeSlot === time
                               ? 'bg-[#3d9098] text-white border-[#3d9098]'
                               : 'border-[#c8ced1] hover:bg-[#f2f7eb]'
-                          }`}
+                            }`}
                         >
                           {time}
                         </button>

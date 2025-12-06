@@ -21,8 +21,8 @@ const AppointmentSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['scheduled', 'completed', 'cancelled', 'no-show'],
-        default: 'scheduled'
+        enum: ['pending', 'scheduled', 'accepted', 'rejected', 'completed', 'cancelled', 'no-show'],
+        default: 'pending'
     },
     meetingLink: {
         type: String // Google Meet or Zoom link
