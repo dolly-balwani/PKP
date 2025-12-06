@@ -211,18 +211,6 @@ export default function AssessmentFlow() {
 
               <div className="space-y-6">
                 <div>
-                  <label className="block text-sm font-semibold text-[#2e2f34] mb-3">Tell us about your current situation</label>
-                  <textarea
-                    value={context}
-                    onChange={(e) => setContext(e.target.value)}
-                    placeholder="e.g., Struggling with exam pressure, feeling isolated, family conflicts, work stress..."
-                    className="w-full p-4 border rounded-xl focus:outline-none focus:border-[#3d9098] focus:ring-2 focus:ring-[#3d9098]/20 resize-none"
-                    style={{borderColor:'#c8ced1'}}
-                    rows={4}
-                  />
-                </div>
-
-                <div>
                   <label className="block text-sm font-semibold text-[#2e2f34] mb-3">Assessment Type</label>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <button
@@ -267,8 +255,7 @@ export default function AssessmentFlow() {
                 <div className="pt-4">
                   <button
                     onClick={handleStartAssessment}
-                    disabled={!context.trim()}
-                    className="w-full px-6 py-4 bg-[#3d9098] text-white rounded-xl font-semibold hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+                    className="w-full px-6 py-4 bg-[#3d9098] text-white rounded-xl font-semibold hover:opacity-90 flex items-center justify-center space-x-2"
                   >
                     <MessageCircle className="w-5 h-5" />
                     <span>Start Assessment →</span>

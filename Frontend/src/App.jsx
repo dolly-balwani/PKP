@@ -13,6 +13,7 @@ import Exercise from "./components/Exercise";
 import Meditation from "./components/Meditation";
 import CounsellorOnboarding from "./components/CounsellorOnboarding";
 import SahaayChat from "./components/SahaayChat";
+import AssessmentFlow from "./components/AssessmentFlow";
 function App() {
   return (
     <Routes>
@@ -75,6 +76,14 @@ function App() {
         element={
           <ProtectedRoute requiredUserType="user">
             < Meditation />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/assessment"
+        element={
+          <ProtectedRoute requiredUserType="user">
+            < AssessmentFlow />
           </ProtectedRoute>
         }
       />

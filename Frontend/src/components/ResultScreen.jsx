@@ -1,4 +1,5 @@
 // src/components/ResultScreen.jsx
+import { useNavigate } from 'react-router-dom';
 import { 
   Award, 
   TrendingUp, 
@@ -14,6 +15,23 @@ import {
 } from 'lucide-react';
 
 export default function ResultScreen({ result, onRestart }) {
+  const navigate = useNavigate();
+
+  const handleBookCounselor = () => {
+    // Parse query parameters from next_step_url if available
+    if (result.next_step_url) {
+      const url = new URL(result.next_step_url, window.location.origin);
+      const ref = url.searchParams.get('ref');
+      const score = url.searchParams.get('score');
+      
+      // Navigate to booking with query parameters
+      const bookingUrl = `/booking${ref ? `?ref=${ref}` : ''}${score ? `${ref ? '&' : '?'}score=${score}` : ''}`;
+      navigate(bookingUrl);
+    } else {
+      // Fallback to booking without params
+      navigate('/booking');
+    }
+  };
   const getSeverityColor = (severity) => {
     switch (severity.toLowerCase()) {
       case 'minimal':
@@ -124,18 +142,18 @@ export default function ResultScreen({ result, onRestart }) {
       {/* Action Buttons */}
       <div className="space-y-4">
         {result.next_step_url && (
-          <a 
-            href={result.next_step_url} 
+          <button 
+            onClick={handleBookCounselor}
             className="w-full px-6 py-4 bg-[#3d9098] text-white rounded-xl font-semibold hover:opacity-90 flex items-center justify-center space-x-2"
           >
             <Calendar className="w-5 h-5" />
             <span>Book Counselor Session</span>
-          </a>
+          </button>
         )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <button 
-            onClick={onRestart}
+            onClick={() => navigate('/mainpage')}
             className="px-6 py-3 border border-[#c8ced1] text-[#2e2f34] rounded-xl font-semibold hover:bg-[#f2f7eb] flex items-center justify-center space-x-2"
           >
             <ArrowLeft className="w-4 h-4" />

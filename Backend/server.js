@@ -11,6 +11,7 @@ import userRouter from "./routes/userRoutes.js";
 import counsellorRouter from "./routes/counsellorRoutes.js";
 import appointmentRouter from "./routes/appointmentRoutes.js";
 import sahaayRouter from "./routes/sahaayRoutes.js";
+import assessmentRoutes from "./routes/assessmentRoutes.js";
 
 dotenv.config();
 
@@ -44,6 +45,7 @@ app.use("/api/sahaay", sahaayRouter);
 app.use("/api/users", userRouter);
 app.use("/api/counsellors", counsellorRouter);
 app.use("/api/appointments", appointmentRouter);
+app.use("/api", assessmentRoutes);
 
 /* ---------- Health Check ---------- */
 app.get("/api/health", (req, res) => {
