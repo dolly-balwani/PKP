@@ -286,7 +286,27 @@ const MainPage = () => {
               </div>
             </div>
           </div>
-
+          
+          {/* Meditation & Exercise shortcuts */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-white rounded-xl p-6 border" style={{borderColor:'#c8ced1'}}>
+              <div className="flex items-center justify-between mb-3">
+                <h4 className="text-xl font-bold text-[#2e2f34]">Meditation</h4>
+                <span className="text-xs px-2 py-1 rounded bg-[#eaf1f5] text-[#3d9098]">Relax</span>
+              </div>
+              <p className="text-[#767272] mb-4">Play soothing ambient sounds for focus and calm.</p>
+              <button onClick={()=>navigate('/meditation')} className="w-full bg-[#2dc8ca] text-white py-2.5 rounded-lg font-semibold hover:opacity-90">Open Meditation</button>
+            </div>
+            <div className="bg-white rounded-xl p-6 border" style={{borderColor:'#c8ced1'}}>
+              <div className="flex items-center justify-between mb-3">
+                <h4 className="text-xl font-bold text-[#2e2f34]">Exercise</h4>
+                <span className="text-xs px-2 py-1 rounded bg-[#fbecb3] text-[#7d7074]">Refresh</span>
+              </div>
+              <p className="text-[#767272] mb-4">Quick routines to energize body and reduce stress.</p>
+              <button onClick={()=>navigate('/exercise')} className="w-full bg-[#889260] text-white py-2.5 rounded-lg font-semibold hover:opacity-90">Open Exercise</button>
+            </div>
+          </div>          
+          
           {/* Community Highlight */}
           <div className="bg-[#2dc8ca] rounded-xl p-8 text-white">
             <div className="flex items-center justify-between">
