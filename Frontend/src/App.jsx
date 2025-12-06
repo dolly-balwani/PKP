@@ -6,6 +6,7 @@ import LoginPage from './components/LoginPage'
 import { Routes, Route } from "react-router-dom";
 import MainPage from './components/MainPage';
 import DailyCheckIn from './components/DailyCheckIn';
+import PsychoeducationalHub from './components/PsychoeducationalHub';
 import BookCounselor from './components/BookCounselor';
 function App() {
   
@@ -17,6 +18,7 @@ function App() {
        <Route path="/mainpage" element={<MainPage />} />
        <Route path="/checkin" element={<DailyCheckIn />} />
        <Route path="/booking" element={<BookCounselor />} />
+       <Route path="/resources" element={<PsychoeducationalHub />} />
        
     </Routes>
   )
