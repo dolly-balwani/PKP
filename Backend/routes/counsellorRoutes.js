@@ -1,13 +1,19 @@
-const express = require('express');
+import express from "express";
+import {
+  createCounsellorProfile,
+  getCounsellorByUserId,
+  getAllCounsellors
+} from "../controllers/counsellorController.js";
+
 const router = express.Router();
-const {
-    createCounsellorProfile,
-    getCounsellorByUserId,
-    getAllCounsellors
-} = require('../controllers/counsellorController');
 
-router.post('/', createCounsellorProfile);
-router.get('/', getAllCounsellors);
-router.get('/:userId', getCounsellorByUserId);
+// Create or update counsellor profile
+router.post("/", createCounsellorProfile);
 
-module.exports = router;
+// Get counsellor by user ID
+router.get("/:userId", getCounsellorByUserId);
+
+// Get all counsellors
+router.get("/", getAllCounsellors);
+
+export default router;

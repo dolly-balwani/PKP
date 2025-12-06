@@ -1,6 +1,6 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
-const AppointmentSchema = new mongoose.Schema({
+const appointmentSchema = new mongoose.Schema({
     student: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
@@ -37,6 +37,8 @@ const AppointmentSchema = new mongoose.Schema({
 });
 
 // Index for efficient querying of a counsellor's schedule
-AppointmentSchema.index({ counsellor: 1, scheduledAt: 1 });
+appointmentSchema.index({ counsellor: 1, scheduledAt: 1 });
 
-module.exports = mongoose.model('Appointment', AppointmentSchema);
+const Appointment = mongoose.model('Appointment', appointmentSchema);
+
+export default Appointment;

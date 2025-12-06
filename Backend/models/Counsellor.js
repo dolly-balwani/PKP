@@ -1,6 +1,6 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
-const CounsellorSchema = new mongoose.Schema({
+const counsellorSchema = new mongoose.Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
@@ -52,4 +52,6 @@ const CounsellorSchema = new mongoose.Schema({
     }
 });
 
-module.exports = mongoose.model('Counsellor', CounsellorSchema);
+const Counsellor = mongoose.model('Counsellor', counsellorSchema);
+
+export default Counsellor;

@@ -3,7 +3,7 @@ import {
   chatting, 
   startSession, 
   endSession 
-} from "../Controller/ChatController.js";
+} from "../controllers/chatController.js";
 
 const router = express.Router();
 
