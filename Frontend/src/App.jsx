@@ -18,9 +18,7 @@ function App() {
       <Route path="/" element={<LoginPage />} />
       <Route path="/register-user" element={<SignupPage />} />
       <Route path="/register-counsellor" element={<SignupPage />} />
-      <Route path="/exercise" element={<Exercise />} />
-    <Route path="/meditation" element={<Meditation />} />
-      {/* Protected User Routes */}
+    
       <Route
         path="/mainpage"
         element={
@@ -50,6 +48,22 @@ function App() {
         element={
           <ProtectedRoute requiredUserType="user">
             <PsychoeducationalHub />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/exercise"
+        element={
+          <ProtectedRoute requiredUserType="user">
+            < Exercise/>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/meditation"
+        element={
+          <ProtectedRoute requiredUserType="user">
+            < Meditation/>
           </ProtectedRoute>
         }
       />
