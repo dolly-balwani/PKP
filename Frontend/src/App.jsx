@@ -21,10 +21,10 @@ function App() {
   return (
     <Routes>
       {/* Public Routes */}
-      <Route path="/" element={<LoginPage />} />
+      <Route path="/" element={<HomePage />} />
+      <Route path="/login" element={<LoginPage />} />
       <Route path="/register-user" element={<SignupPage />} />
       <Route path="/register-counsellor" element={<SignupPage />} />
-      <Route path="/homepage" element={<HomePage />} />
 
       {/* Protected User Routes */}
       <Route

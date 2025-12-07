@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Heart, Shield, Users, Brain, CheckCircle, Star, ArrowRight, Menu, X, MessageCircle, Calendar, BookOpen, BarChart3, Sparkles, Activity, Globe, Smile } from 'lucide-react';
 
 export default function Homepage() {
+  const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
   
@@ -73,7 +75,11 @@ export default function Homepage() {
               <a href="#features" className="transition-colors" style={{color:'#767272'}}>Features</a>
               <a href="#how-it-works" className="transition-colors" style={{color:'#767272'}}>How It Works</a>
               <a href="#testimonials" className="transition-colors" style={{color:'#767272'}}>Reviews</a>
-              <button className="text-white px-6 py-2 rounded-full transition-all duration-300 transform hover:scale-105" style={{background:'#2dc8ca'}}>
+              <button 
+                onClick={() => navigate('/login')}
+                className="text-white px-6 py-2 rounded-full transition-all duration-300 transform hover:scale-105" 
+                style={{background:'#2dc8ca'}}
+              >
                 Get Started
               </button>
             </div>
@@ -95,7 +101,11 @@ export default function Homepage() {
                 <a href="#features" className="px-4" style={{color:'#767272'}}>Features</a>
                 <a href="#how-it-works" className="px-4" style={{color:'#767272'}}>How It Works</a>
                 <a href="#testimonials" className="px-4" style={{color:'#767272'}}>Reviews</a>
-                <button className="text-white px-6 py-2 rounded-full mx-4" style={{background:'#2dc8ca'}}>
+                <button 
+                  onClick={() => navigate('/login')}
+                  className="text-white px-6 py-2 rounded-full mx-4" 
+                  style={{background:'#2dc8ca'}}
+                >
                   Get Started
                 </button>
               </div>
@@ -124,7 +134,11 @@ export default function Homepage() {
               </p>
 
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                <button className="w-full sm:w-auto text-white px-8 py-4 rounded-full text-lg font-semibold transition-all duration-300 transform hover:scale-105 flex items-center justify-center space-x-2" style={{background:'#2dc8ca'}}>
+                <button 
+                  onClick={() => navigate('/login')}
+                  className="w-full sm:w-auto text-white px-8 py-4 rounded-full text-lg font-semibold transition-all duration-300 transform hover:scale-105 flex items-center justify-center space-x-2" 
+                  style={{background:'#2dc8ca'}}
+                >
                   <span>Start Your Journey</span>
                   <ArrowRight className="w-5 h-5" />
                 </button>
@@ -506,7 +520,11 @@ export default function Homepage() {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="bg-white px-8 py-4 rounded-full text-lg font-semibold transition-all duration-300 transform hover:scale-105 flex items-center justify-center space-x-2" style={{color:'#3d9098'}}>
+            <button 
+              onClick={() => navigate('/login')}
+              className="bg-white px-8 py-4 rounded-full text-lg font-semibold transition-all duration-300 transform hover:scale-105 flex items-center justify-center space-x-2" 
+              style={{color:'#3d9098'}}
+            >
               <span>Get Started Now</span>
               <ArrowRight className="w-5 h-5" />
             </button>
