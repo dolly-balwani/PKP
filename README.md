@@ -1,187 +1,184 @@
-🧠 Sahay – A Mental Health Support Platform
-📌 Problem Statement
+Here is your fully polished **README.md** including Firebase env details + MongoDB + demo link 👇
+Just copy–paste directly into GitHub.
 
-[PKPHM03] Mental Health Support
-Mental health awareness is growing, yet access to timely, affordable, and reliable mental health resources remains limited—especially in underserved communities. Stigma, lack of professional support, and language barriers further prevent individuals from seeking help.
+---
 
-💡 Solution Overview
+# 🧠 SAHAY – Digital Mental Health Support Platform
 
-Sahay is a comprehensive digital mental health platform designed to provide early support, self-assessment tools, professional counselling access, AI-based emotional guidance, and community-driven peer support in one safe and accessible space.
+**Problem Statement:** **PKPHM03 – Mental Health Support for Underserved Communities**
 
-The platform focuses on early intervention, cultural inclusivity, and continuous mental well-being, making mental health support easier to approach and less intimidating.
+---
 
-🔐 User & Counsellor Access
+## 📌 Overview
 
-User Login: Individuals seeking mental health support
+Mental health awareness in India is improving, yet access to **timely, culturally sensitive, and stigma-free support** remains limited — especially for students, rural youth, and community workers.
 
-Counsellor Login: Verified counsellors providing professional guidance
+**Sahay** is a digital mental wellness platform that provides:
 
-Role-based access ensures secure and structured interactions
+* Early screening
+* AI-based emotional assistance
+* Professional counselling connection
+* Peer community support
+* Multilingual resources
+* Daily well-being tracking
+* Frontline worker training (teachers, ASHA workers, wardens)
 
-📅 Counsellor Appointment Booking
+---
 
-Users can browse and book appointments with counsellors
+## 🌟 Core Features
 
-Seamless scheduling for timely professional support
+### 🔐 User & Counsellor Access
 
-Guided referrals based on assessment results
+* Role-based login
+* Secure authentication powered by **Firebase Auth**
 
-📊 Self-Assessment Tools
+### 📅 Counsellor Appointment Booking
 
-PHQ-9: Depression self-assessment
+* Book verified counsellor sessions
+* Referral suggestions based on assessment score severity
 
-GAD-7: Anxiety self-assessment
+### 📊 PHQ-9 & GAD-7 Self-Assessments
 
-Scientifically validated scoring with severity levels
+* Scientifically validated tools for:
 
-Helps users understand their mental well-being and take informed next steps
+  * Depression (PHQ-9)
+  * Anxiety (GAD-7)
+* Auto-scoring + severity feedback
 
-📝 Daily Check-In
+### 📝 Daily Mood Check-In
 
-Simple daily well-being questions to track mood and emotional health
+* Track emotional patterns over time
 
-Encourages regular self-reflection and routine mental health monitoring
+### 🤖 DBT-Based Emotional AI Chatbot
 
-🤖 DBT-Based AI Chatbot
+* Supports grounding, validation, coping strategies
+* 24×7 listener for crisis-free first support
 
-AI chatbot guided by Dialectical Behavior Therapy (DBT) principles
+### 🌍 Multilingual Support Hub
 
-Provides:
+* Mental well-being guides in accessible languages
+* Designed for rural and semi-urban inclusion
 
-Emotional validation
+### 🤝 Anonymous Peer Community
 
-Grounding techniques
+* Support group without identity exposure
+* Community guidelines + reporting safety layer
 
-Stress and anxiety coping strategies
+### 🧘 Wellness & Mindfulness Zone
 
-Available 24/7 as an emotional support companion
+* Guided meditation
+* Breathing tools with timers
+* Habit reminders
 
-Designed to support, not replace, professional therapy
+### ⭐ Training Lab (Innovation Layer)
 
-🌍 Multilingual Resource Hub
+For frontline responders **(teachers, ASHA workers, wardens)**:
 
-Curated mental health resources available in multiple languages
+* Listening skills
+* Suicide red-flag protocol
+* Trauma-safe language
+* Escalation map
 
-Articles, coping guides, and self-help content
+---
 
-Improves accessibility for diverse and underserved communities
+## 🔒 Privacy & Safety
 
-🤝 Peer Support Community
+* Anonymous postings (no names shown in community)
+* No personal identity leakage
+* Moderation triggers and escalation safety rules
 
-Users can anonymously share thoughts and experiences
+---
 
-Peer-to-peer replies and supportive reactions
+## 🛠 Tech Stack
 
-Encourages empathy, connection, and shared understanding
+### Frontend
 
-Community guidelines and reporting features help maintain a safe environment
+* React
+* Vite
+* Tailwind CSS
+* Firebase Authentication
 
-🧘 Wellness & Routine Support
+### Backend
 
-Guided meditation and breathing exercises
+* Node.js
+* Express.js
+* MongoDB / Atlas
 
-Daily exercise suggestions
+### AI & Wellness Layer
 
-Built-in timers and reminders to help users develop healthy routines
+* DBT-based emotional support model
+* PHQ-9 & GAD-7 scoring engine
 
-🔒 Privacy & Anonymity
+---
 
-Peer support posts are anonymous, allowing users to express themselves freely without fear of judgment
+## 🧩 Environment Setup
 
-User identity is never displayed in community discussions
+### 🔧 Backend `.env`
 
-Other features remain secure and private
+Create file inside `/Backend`:
 
-Designed with sensitivity toward mental health stigma while maintaining platform safety
-
-🎯 Impact
-
-Sahay helps users by:
-
-Encouraging early awareness through self-assessment
-
-Connecting individuals with professional and peer support
-
-Providing 24/7 AI-assisted emotional guidance
-
-Making mental health care more accessible, inclusive, and stigma-free
-
-🚀 Vision
-
-To build a trusted digital ecosystem where mental well-being support is available anytime, anywhere, empowering individuals—especially from underserved communities—to seek help confidently and without stigma.
-🛠️ Tech Stack
-Frontend
-
-React – Component-based UI
-
-Vite – Fast development and build tool
-
-Tailwind CSS – Utility-first styling
-
-Firebase Authentication – Secure user & counsellor login
-
-Backend
-
-Node.js – Server-side runtime
-
-Express.js – REST API framework
-
-MongoDB – Database for storing application data
-
-AI & Wellness
-
-DBT-based AI Chatbot – Provides emotional support and coping strategies
-
-Mental Health Assessments – PHQ-9 & GAD-7 self-assessment tools
-
-🔐 Authentication
-
-Authentication is handled using Firebase Authentication for both users and counsellors.
-The backend relies on existing authentication flow and does not manage authentication logic directly, ensuring a clean separation of concerns.
-
-▶️ How to Run the Project Locally
-✅ Prerequisites
-
-Node.js (v16 or above)
-
-MongoDB (local or MongoDB Atlas)
-
-Git
-
-1️⃣ Clone the Repository
-git clone https://github.com/<your-username>/<repo-name>.git
-cd <repo-name>
-
-2️⃣ Setup Backend
-cd Backend
-npm install
-
-
-Create a .env file inside the Backend folder:
-
+```env
 PORT=5000
 MONGO_URI=your_mongodb_connection_string
+```
 
+### 🔥 Frontend `.env` (Firebase)
 
-Run the backend server:
+Create file inside `/Frontend`:
 
+```env
+VITE_FIREBASE_API_KEY=your_key
+VITE_FIREBASE_AUTH_DOMAIN=your_domain
+VITE_FIREBASE_PROJECT_ID=your_project_id
+VITE_FIREBASE_STORAGE_BUCKET=your_bucket
+VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+VITE_FIREBASE_APP_ID=your_app_id
+```
+
+---
+
+## ▶️ Local Setup Instructions
+
+### 1️⃣ Clone Repository
+
+```bash
+git clone https://github.com/<your-username>/<repo-name>.git
+cd <repo-name>
+```
+
+### 2️⃣ Backend Setup
+
+```bash
+cd Backend
+npm install
 node server.js
+```
 
+**Expected Output**
 
-Expected output:
-
+```
 ✅ MongoDB Connected
 🚀 Server running on port 5000
+```
 
-3️⃣ Setup Frontend
+### 3️⃣ Frontend Setup
 
-Open a new terminal:
-
-cd Frontend
+```bash
+cd ../Frontend
 npm install
 npm run dev
+```
+
+Access app at:
+
+👉 [http://localhost:5173](http://localhost:5173)
+
+---
+
+## 🎥 Demo Video
+
+📍**Link:**
+(https://drive.google.com/drive/folders/1aFJCqNQ0AfgyeZF6Wq0p-BC8oWwIUu7o?usp=sharing)
 
 
-The frontend will be available at:
 
-http://localhost:5173
