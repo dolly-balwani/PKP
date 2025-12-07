@@ -142,8 +142,8 @@ VITE_FIREBASE_APP_ID=your_app_id
 ### 1️⃣ Clone Repository
 
 ```bash
-git clone https://github.com/<your-username>/<repo-name>.git
-cd <repo-name>
+git clone (https://github.com/dolly-balwani/PKP.git)
+cd <PKP>
 ```
 
 ### 2️⃣ Backend Setup
@@ -179,6 +179,7 @@ Access app at:
 
 📍**Link:**
 (https://drive.google.com/drive/folders/1aFJCqNQ0AfgyeZF6Wq0p-BC8oWwIUu7o?usp=sharing)
+
 
 
 
