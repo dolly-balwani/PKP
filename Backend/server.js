@@ -69,21 +69,30 @@ if (process.env.NODE_ENV === "production") {
 /* ---------- MongoDB Connection ---------- */
 const connectDB = async () => {
     try {
+        if (!process.env.MONGO_URI) {
+            console.warn("⚠️  MONGO_URI not found in environment variables");
+            return;
+        }
         await mongoose.connect(process.env.MONGO_URI, {
-            serverSelectionTimeoutMS: 5000,
+            serverSelectionTimeoutMS: 10000,
+            retryWrites: true,
+            w: 'majority'
         });
         console.log("🔥 MongoDB connected successfully");
     } catch (err) {
-        console.error("❌ MongoDB connection error:", err);
-        process.exit(1);
+        console.error("❌ MongoDB connection error:", err.message);
+        console.error("💡 Tip: Make sure your IP address is whitelisted in MongoDB Atlas");
+        console.error("💡 Tip: Check your MONGO_URI in .env file");
+        // Don't exit - allow server to start for development
+        // Routes that need DB will fail gracefully
     }
 };
 
 /* ---------- Server Start ---------- */
-const PORT = process.env.PORT || 9000;
+const PORT = process.env.PORT || 5000;
 const server = app.listen(PORT, async () => {
-    await connectDB();
     console.log(`🚀 Server running on port ${PORT}`);
+    await connectDB();
 });
 
 /* ---------- Global Error Handling ---------- */
