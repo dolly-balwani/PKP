@@ -178,7 +178,8 @@ Access app at:
 ## 🎥 Demo Video
 
 📍**Link:**
-(https://drive.google.com/drive/folders/1aFJCqNQ0AfgyeZF6Wq0p-BC8oWwIUu7o?usp=sharing)
+(https://drive.google.com/file/d/1elDAzfWSYPG6TIy0kWTzkv2TTXxo00P-/view?usp=drivesdk)
+
 
 
 
