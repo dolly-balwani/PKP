@@ -1,8 +1,3 @@
-Here is your fully polished **README.md** including Firebase env details + MongoDB + demo link 👇
-Just copy–paste directly into GitHub.
-
----
-
 # 🧠 SAHAY – Digital Mental Health Support Platform
 
 **Problem Statement:** **PKPHM03 – Mental Health Support for Underserved Communities**
