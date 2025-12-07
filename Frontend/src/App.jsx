@@ -15,6 +15,8 @@ import CounsellorOnboarding from "./components/CounsellorOnboarding";
 import SahaayChat from "./components/SahaayChat";
 import AssessmentFlow from "./components/AssessmentFlow";
 import PeerSupport from "./components/PeerSupport";
+import HomePage from "./components/HomePage";
+
 function App() {
   return (
     <Routes>
@@ -22,6 +24,7 @@ function App() {
       <Route path="/" element={<LoginPage />} />
       <Route path="/register-user" element={<SignupPage />} />
       <Route path="/register-counsellor" element={<SignupPage />} />
+      <Route path="/homepage" element={<HomePage />} />
 
       {/* Protected User Routes */}
       <Route
