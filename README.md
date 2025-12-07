@@ -146,7 +146,7 @@ cd <PKP>
 ```bash
 cd Backend
 npm install
-node server.js
+npm run dev
 ```
 
 **Expected Output**
