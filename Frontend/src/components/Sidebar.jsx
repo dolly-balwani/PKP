@@ -27,6 +27,7 @@ const Sidebar = ({
     { id: 'dashboard', icon: BarChart3, label: 'Dashboard', color: 'bg-[#3d9098]', path: '/mainpage' },
     { id: 'assessment', icon: Heart, label: 'Self Assessment', color: 'bg-[#f99c5b]', path: '/assessment' },
     { id: 'resources', icon: BookOpen, label: 'Resources', color: 'bg-[#cab2cb]', path: '/resources' },
+    { id: 'mhfa', icon: Shield, label: 'MHFA Training', color: 'bg-[#8a4fff]', path: '/mhfa-training-lab' },
     { id: 'chatbot', icon: MessageCircle, label: 'AI Support', color: 'bg-[#9ea9a9]', path: '/chatbot' },
     { id: 'booking', icon: Calendar, label: 'Book Counselor', color: 'bg-[#d8c1ad]', path: '/booking' },
     { id: 'community', icon: Users, label: 'Peer Support', color: 'bg-[#7d7074]', path: '/peer-support' },

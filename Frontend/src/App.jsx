@@ -16,6 +16,7 @@ import SahaayChat from "./components/SahaayChat";
 import AssessmentFlow from "./components/AssessmentFlow";
 import PeerSupport from "./components/PeerSupport";
 import HomePage from "./components/HomePage";
+import MHFATrainingLab from "./components/MHFATrainingLab";
 
 function App() {
   return (
@@ -96,6 +97,14 @@ function App() {
         element={
           <ProtectedRoute requiredUserType="user">
             <PeerSupport />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/mhfa-training-lab"
+        element={
+          <ProtectedRoute requiredUserType="user">
+            <MHFATrainingLab />
           </ProtectedRoute>
         }
       />

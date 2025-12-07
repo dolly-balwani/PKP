@@ -68,6 +68,16 @@ const MainPage = () => {
       bgColor: 'bg-[#2dc8ca]',
       action: 'Schedule',
       time: 'Next: Tomorrow 2pm'
+    },
+    {
+      id: 'mhfa',
+      title: 'MHFA Training Lab',
+      subtitle: 'Learn mental health first aid',
+      icon: BookOpen,
+      bgColor: 'bg-[#f99c5b]',
+      action: 'Start Learning',
+      time: 'Self-paced',
+      onClick: () => navigate('/mhfa-training-lab')
     }
   ];
 
